@@ -1,0 +1,21 @@
+id,title,description,priority,story_points,required_skill,deadline
+1,User Login Page,Implement a secure user login page using OAuth2 and JWT,High,5,React,11/12/2025
+2,Payment API Integration,Integrate Stripe API for processing payments,High,8,Python,11/15/2025
+3,Profile Dashboard UI,Create a responsive user profile dashboard,Medium,3,React,11/10/2025
+4,Database Optimization,Optimize SQL queries for faster dashboard loading,High,5,SQL,11/14/2025
+5,Email Notifications,Add transactional email system using SendGrid,Medium,4,Python,11/13/2025
+6,Mobile Layout Fix,Fix CSS grid issues for iPhone 14 and Android screens,Low,2,HTML/CSS,11/9/2025
+7,Password Reset Flow,Implement forgot-password and reset-token flow,Medium,3,Python,11/11/2025
+8,Graph Analytics View,Build charting components with Chart.js,Medium,4,JavaScript,11/16/2025
+9,Authentication API,Create secure endpoints for auth and sessions,High,6,Java,11/13/2025
+10,Data Export Tool,Allow users to export reports in CSV format,Low,2,Python,11/17/2025
+11,UI Theme Engine,Add dark/light mode toggle and save preferences,Medium,3,React,11/10/2025
+12,Cache Middleware,Add Redis cache layer to reduce backend latency,High,5,Python,11/12/2025
+13,Audit Logging,Implement audit logs for user actions,Medium,4,SQL,11/14/2025
+14,Push Notifications,Integrate Firebase push notifications,Medium,3,JavaScript,11/15/2025
+15,Refactor Legacy Code,Clean up deprecated functions in core utils,Low,5,Python,11/18/2025
+16,Accessibility Review,Ensure WCAG 2.1 compliance for main pages,Medium,2,HTML/CSS,11/11/2025
+17,User Feedback Form,Add feedback modal and store responses,Low,2,React,11/12/2025
+18,Error Tracking Setup,Integrate Sentry error tracking for all environments,Medium,3,Python,11/16/2025
+19,Search Optimization,Improve full-text search accuracy and ranking,High,5,SQL,11/13/2025
+20,Session Timeout,Add session timeout and re-authentication,Medium,3,Java,11/12/2025

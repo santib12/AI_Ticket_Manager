@@ -1,0 +1,10 @@
+name,availability,current_workload,skills,experience_years
+Alice Johnson,0.8,5,"Python, FastAPI, Machine Learning",5
+Bob Smith,0.9,12,"JavaScript, React, Node.js",3
+Carol Williams,0.7,8,"Python, Django, PostgreSQL",4
+David Brown,0.9,3,"Python, FastAPI, Docker, Kubernetes",6
+Emma Davis,0.6,15,"Python, Data Science, Pandas",4
+Frank Miller,0.85,7,"Java, Spring Boot, Microservices",5
+Grace Wilson,0.75,10,"Python, Flask, REST APIs",3
+Henry Moore,0.9,4,"TypeScript, Angular, AWS",5
+
