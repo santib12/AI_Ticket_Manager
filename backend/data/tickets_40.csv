@@ -1,0 +1,42 @@
+id,title,description,priority,story_points,required_skill,deadline
+1,User Login Page,Implement user login page feature or enhancement in the app.,High,8,HTML/CSS,11/24/2025
+2,Payment API Integration,Implement payment api integration feature or enhancement in the app.,Low,2,React,11/25/2025
+3,Profile Dashboard UI,Implement profile dashboard ui feature or enhancement in the app.,Low,2,Python,11/23/2025
+4,Database Optimization,Implement database optimization feature or enhancement in the app.,High,6,JavaScript,11/14/2025
+5,Email Notifications,Implement email notifications feature or enhancement in the app.,Low,2,Python,11/17/2025
+6,Mobile Layout Fix,Implement mobile layout fix feature or enhancement in the app.,High,6,HTML/CSS,11/25/2025
+7,Password Reset Flow,Implement password reset flow feature or enhancement in the app.,High,6,JavaScript,11/24/2025
+8,Graph Analytics View,Implement graph analytics view feature or enhancement in the app.,High,7,Java,11/9/2025
+9,Authentication API,Implement authentication api feature or enhancement in the app.,Low,2,React,11/18/2025
+10,Data Export Tool,Implement data export tool feature or enhancement in the app.,Low,2,React,11/25/2025
+11,UI Theme Engine,Implement ui theme engine feature or enhancement in the app.,Medium,4,Python,11/19/2025
+12,Cache Middleware,Implement cache middleware feature or enhancement in the app.,Low,1,SQL,11/12/2025
+13,Audit Logging,Implement audit logging feature or enhancement in the app.,Medium,3,Java,11/15/2025
+14,Push Notifications,Implement push notifications feature or enhancement in the app.,Medium,5,React,11/11/2025
+15,Refactor Legacy Code,Implement refactor legacy code feature or enhancement in the app.,Medium,3,React,11/18/2025
+16,Accessibility Review,Implement accessibility review feature or enhancement in the app.,Low,1,HTML/CSS,11/17/2025
+17,User Feedback Form,Implement user feedback form feature or enhancement in the app.,Medium,4,SQL,11/10/2025
+18,Error Tracking Setup,Implement error tracking setup feature or enhancement in the app.,Medium,5,Python,11/23/2025
+19,Search Optimization,Implement search optimization feature or enhancement in the app.,Low,2,React,11/9/2025
+20,Session Timeout,Implement session timeout feature or enhancement in the app.,Medium,4,React,11/23/2025
+21,Dark Mode Toggle,Implement dark mode toggle feature or enhancement in the app.,Medium,5,HTML/CSS,11/15/2025
+22,Admin Dashboard,Implement admin dashboard feature or enhancement in the app.,High,7,JavaScript,11/14/2025
+23,Real-time Chat,Implement real-time chat feature or enhancement in the app.,Low,2,Java,11/13/2025
+24,User Analytics Overview,Implement user analytics overview feature or enhancement in the app.,High,8,JavaScript,11/21/2025
+25,Bug Report System,Implement bug report system feature or enhancement in the app.,Low,1,React,11/21/2025
+26,File Upload Feature,Implement file upload feature feature or enhancement in the app.,Low,1,JavaScript,11/19/2025
+27,Calendar Integration,Implement calendar integration feature or enhancement in the app.,Low,1,SQL,11/22/2025
+28,Multi-language Support,Implement multi-language support feature or enhancement in the app.,Medium,3,SQL,11/25/2025
+29,User Role Management,Implement user role management feature or enhancement in the app.,High,6,Java,11/15/2025
+30,Payment History Page,Implement payment history page feature or enhancement in the app.,Medium,4,SQL,11/13/2025
+31,Subscription Management,Implement subscription management feature or enhancement in the app.,Low,2,React,11/16/2025
+32,Email Template Editor,Implement email template editor feature or enhancement in the app.,Low,1,Python,11/11/2025
+33,Data Backup Automation,Implement data backup automation feature or enhancement in the app.,High,6,JavaScript,11/9/2025
+34,Two-Factor Authentication,Implement two-factor authentication feature or enhancement in the app.,Medium,4,Python,11/11/2025
+35,User Onboarding Tutorial,Implement user onboarding tutorial feature or enhancement in the app.,Medium,4,JavaScript,11/18/2025
+36,Feature Flag System,Implement feature flag system feature or enhancement in the app.,Low,2,SQL,11/18/2025
+37,Beta Access Control,Implement beta access control feature or enhancement in the app.,Medium,4,HTML/CSS,11/12/2025
+38,Notification Preferences,Implement notification preferences feature or enhancement in the app.,Low,1,SQL,11/22/2025
+39,Team Collaboration Board,Implement team collaboration board feature or enhancement in the app.,Medium,5,Python,11/11/2025
+40,Project Summary Report,Implement project summary report feature or enhancement in the app.,High,8,SQL,11/10/2025
+41,System Health Check,Implement system health check feature or enhancement in the app.,High,7,React,11/15/2025

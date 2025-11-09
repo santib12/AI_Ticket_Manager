@@ -97,21 +97,21 @@ function AssignmentResults({ assignments, tickets, onReset }) {
 
       {/* Summary Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 fade-in">
-        <div className="card bg-gradient-to-br from-slate-400 to-slate-500 text-white transform hover:scale-105 transition-transform duration-200 shadow-lg">
-          <div className="text-4xl font-bold">{totalTickets}</div>
-          <div className="text-slate-100 mt-2 font-medium">Total Tickets</div>
+        <div className="rounded-lg p-6 border border-blue-200 transform hover:scale-105 transition-transform duration-200 shadow-lg" style={{ backgroundColor: '#E6F2F8' }}>
+          <div className="text-4xl font-bold" style={{ color: '#003087' }}>{totalTickets}</div>
+          <div className="mt-2 font-medium" style={{ color: '#003087' }}>Total Tickets</div>
         </div>
-        <div className="card bg-gradient-to-br from-slate-500 to-slate-600 text-white transform hover:scale-105 transition-transform duration-200 shadow-lg">
-          <div className="text-4xl font-bold">{uniqueDevelopers}</div>
-          <div className="text-slate-100 mt-2 font-medium">Developers Assigned</div>
+        <div className="rounded-lg p-6 border border-blue-200 transform hover:scale-105 transition-transform duration-200 shadow-lg" style={{ backgroundColor: '#E6F2F8' }}>
+          <div className="text-4xl font-bold" style={{ color: '#003087' }}>{uniqueDevelopers}</div>
+          <div className="mt-2 font-medium" style={{ color: '#003087' }}>Developers Assigned</div>
         </div>
-        <div className="card bg-gradient-to-br from-slate-400 to-slate-500 text-white transform hover:scale-105 transition-transform duration-200 shadow-lg">
-          <div className="text-4xl font-bold">{avgWorkload}</div>
-          <div className="text-slate-100 mt-2 font-medium">Avg Workload (pts)</div>
+        <div className="rounded-lg p-6 border border-blue-200 transform hover:scale-105 transition-transform duration-200 shadow-lg" style={{ backgroundColor: '#E6F2F8' }}>
+          <div className="text-4xl font-bold" style={{ color: '#003087' }}>{avgWorkload}</div>
+          <div className="mt-2 font-medium" style={{ color: '#003087' }}>Avg Workload (pts)</div>
         </div>
-        <div className="card bg-gradient-to-br from-slate-500 to-slate-600 text-white transform hover:scale-105 transition-transform duration-200 shadow-lg">
-          <div className="text-4xl font-bold">{totalPoints}</div>
-          <div className="text-slate-100 mt-2 font-medium">Total Story Points</div>
+        <div className="rounded-lg p-6 border border-blue-200 transform hover:scale-105 transition-transform duration-200 shadow-lg" style={{ backgroundColor: '#E6F2F8' }}>
+          <div className="text-4xl font-bold" style={{ color: '#003087' }}>{totalPoints}</div>
+          <div className="mt-2 font-medium" style={{ color: '#003087' }}>Total Story Points</div>
         </div>
       </div>
 

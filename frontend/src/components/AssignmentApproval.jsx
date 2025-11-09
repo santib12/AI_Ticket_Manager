@@ -9,16 +9,22 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
   const assignmentsData = assignments.assignments || []
   const totalTickets = assignments.total_tickets || 0
 
-  // Merge tickets with assignments
-  const mergedData = tickets.map(ticket => {
-    const assignment = assignmentsData.find(a => a.ticket_id === parseInt(ticket.id))
+  // Only include tickets that were actually assigned (filtered tickets)
+  // Get the list of assigned ticket IDs - this should already be limited by the filter
+  const assignedTicketIds = new Set(assignmentsData.map(a => a.ticket_id))
+  
+  // Merge tickets with assignments - ONLY include assigned tickets (respects filter limit)
+  // The assignmentsData array already contains only the filtered/limited tickets
+  const mergedData = assignmentsData.map(assignment => {
+    const ticket = tickets.find(t => parseInt(t.id) === assignment.ticket_id)
+    if (!ticket) return null
     return {
       ...ticket,
-      assigned_to: assignment?.assigned_to || 'Unassigned',
-      reason: assignment?.reason || 'No assignment',
-      ticket_id: parseInt(ticket.id),
+      assigned_to: assignment.assigned_to,
+      reason: assignment.reason || 'No assignment',
+      ticket_id: assignment.ticket_id,
     }
-  })
+  }).filter(Boolean) // Remove any null entries
 
   const handleApprove = (ticketId) => {
     setApprovedTickets(prev => new Set([...prev, ticketId]))
@@ -227,21 +233,21 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
 
           {/* Summary Metrics for Approved */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
-              <div className="text-2xl font-bold text-pnc-blue">{approvedCount}</div>
-              <div className="text-sm text-pnc-blue">Approved Tickets</div>
+            <div className="rounded-lg p-3 border border-blue-200" style={{ backgroundColor: '#E6F2F8' }}>
+              <div className="text-2xl font-bold" style={{ color: '#003087' }}>{approvedCount}</div>
+              <div className="text-sm" style={{ color: '#003087' }}>Approved Tickets</div>
             </div>
-            <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
-              <div className="text-2xl font-bold text-pnc-blue">{uniqueDevelopers}</div>
-              <div className="text-sm text-pnc-blue">Developers</div>
+            <div className="rounded-lg p-3 border border-blue-200" style={{ backgroundColor: '#E6F2F8' }}>
+              <div className="text-2xl font-bold" style={{ color: '#003087' }}>{uniqueDevelopers}</div>
+              <div className="text-sm" style={{ color: '#003087' }}>Developers</div>
             </div>
-            <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
-              <div className="text-2xl font-bold text-pnc-blue">{avgWorkload}</div>
-              <div className="text-sm text-pnc-blue">Avg Workload</div>
+            <div className="rounded-lg p-3 border border-blue-200" style={{ backgroundColor: '#E6F2F8' }}>
+              <div className="text-2xl font-bold" style={{ color: '#003087' }}>{avgWorkload}</div>
+              <div className="text-sm" style={{ color: '#003087' }}>Avg Workload</div>
             </div>
-            <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
-              <div className="text-2xl font-bold text-pnc-blue">{totalPoints}</div>
-              <div className="text-sm text-pnc-blue">Total Points</div>
+            <div className="rounded-lg p-3 border border-blue-200" style={{ backgroundColor: '#E6F2F8' }}>
+              <div className="text-2xl font-bold" style={{ color: '#003087' }}>{totalPoints}</div>
+              <div className="text-sm" style={{ color: '#003087' }}>Total Points</div>
             </div>
           </div>
 

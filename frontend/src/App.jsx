@@ -49,8 +49,9 @@ function App() {
     if (!tickets || tickets.length === 0) return []
     
     let filtered = [...tickets]
+    const initialCount = filtered.length
     
-    // Filter by story points
+    // Step 1: Filter by story points first
     if (storyPointsFilter !== 'all') {
       const [min, max] = storyPointsFilter.split('-').map(Number)
       filtered = filtered.filter(ticket => {
@@ -58,27 +59,42 @@ function App() {
         return points >= min && points <= max
       })
     }
+    const afterStoryPoints = filtered.length
     
-    // Filter by difficulty (priority)
+    // Step 2: Filter by difficulty (priority)
     if (difficultyFilter !== 'all') {
       filtered = filtered.filter(ticket => {
         const priority = (ticket.priority || '').toLowerCase()
         return priority === difficultyFilter.toLowerCase()
       })
     }
+    const afterPriority = filtered.length
     
-    // Limit number of tickets
-    if (ticketLimit !== 'all' && ticketLimit !== '20+') {
-      const limit = parseInt(ticketLimit)
-      filtered = filtered.slice(0, limit)
+    // Step 3: Limit number of tickets (apply this AFTER other filters)
+    if (ticketLimit === 'all') {
+      // Keep all filtered tickets - no limit
     } else if (ticketLimit === '20+') {
-      // For 20+, ensure at least 20 tickets (or all if less than 20 available)
-      if (filtered.length >= 20) {
-        // Keep all tickets (no limit)
-      } else {
-        // If less than 20, keep all available
+      // For 20+, keep all filtered tickets (no limit) - supports large datasets
+    } else {
+      // For specific numbers (5, 10, 15), STRICTLY limit to that number
+      const limit = parseInt(ticketLimit, 10)
+      if (!isNaN(limit) && limit > 0) {
+        // Always slice to the limit, even if filtered.length is less than limit
+        filtered = filtered.slice(0, limit)
       }
     }
+    const finalCount = filtered.length
+    
+    // Debug logging
+    console.log('Filtering Debug:', {
+      initialCount,
+      afterStoryPoints,
+      afterPriority,
+      finalCount,
+      ticketLimit,
+      storyPointsFilter,
+      difficultyFilter
+    })
     
     return filtered
   }
@@ -371,6 +387,28 @@ function App() {
                         {storyPointsFilter !== 'all' && ` • Story Points: ${storyPointsFilter}`}
                         {difficultyFilter !== 'all' && ` • Priority: ${difficultyFilter.charAt(0).toUpperCase() + difficultyFilter.slice(1)}`}
                       </p>
+                      {(() => {
+                        const filtered = getFilteredTickets()
+                        const totalAfterFilters = tickets ? tickets.filter(t => {
+                          let match = true
+                          if (storyPointsFilter !== 'all') {
+                            const [min, max] = storyPointsFilter.split('-').map(Number)
+                            const points = parseInt(t.story_points) || 0
+                            match = match && (points >= min && points <= max)
+                          }
+                          if (difficultyFilter !== 'all') {
+                            const priority = (t.priority || '').toLowerCase()
+                            match = match && (priority === difficultyFilter.toLowerCase())
+                          }
+                          return match
+                        }).length : 0
+                        const unassigned = totalAfterFilters - filtered.length
+                        return unassigned > 0 ? (
+                          <p className="text-sm text-pnc-blue mt-2 opacity-75">
+                            ⚠️ {unassigned} ticket(s) will remain unassigned due to ticket limit
+                          </p>
+                        ) : null
+                      })()}
                     </div>
                     
                     <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-pnc-blue">

@@ -9,47 +9,127 @@ function TicketPreview({ tickets }) {
   
   const uniqueSkills = new Set(tickets.map(t => t.required_skill).filter(Boolean)).size
 
-  // Skill distribution
-  const skillCounts = tickets.reduce((acc, ticket) => {
-    const skill = ticket.required_skill || 'Unknown'
-    acc[skill] = (acc[skill] || 0) + 1
+  // Priority distribution
+  const priorityCounts = tickets.reduce((acc, ticket) => {
+    const priority = ticket.priority || 'Not Set'
+    acc[priority] = (acc[priority] || 0) + 1
     return acc
   }, {})
 
-  const skillData = Object.entries(skillCounts).map(([skill, count]) => ({
-    skill,
+  const priorityData = Object.entries(priorityCounts).map(([priority, count]) => ({
+    priority,
     count,
   }))
 
+  // Due date trends - group by date ranges
+  const parseDate = (dateStr) => {
+    if (!dateStr) return null
+    const [month, day, year] = dateStr.split('/').map(Number)
+    return new Date(year, month - 1, day)
+  }
+
+  const getDateRange = (date) => {
+    if (!date) return 'No Date'
+    const today = new Date()
+    const diffTime = date - today
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    if (diffDays < 0) return 'Overdue'
+    if (diffDays <= 7) return 'This Week'
+    if (diffDays <= 14) return 'Next Week'
+    if (diffDays <= 30) return 'This Month'
+    return 'Later'
+  }
+
+  const dueDateCounts = tickets.reduce((acc, ticket) => {
+    const date = parseDate(ticket.deadline)
+    const range = getDateRange(date)
+    acc[range] = (acc[range] || 0) + 1
+    return acc
+  }, {})
+
+  const dueDateData = Object.entries(dueDateCounts).map(([range, count]) => ({
+    range,
+    count,
+  })).sort((a, b) => {
+    const order = { 'Overdue': 0, 'This Week': 1, 'Next Week': 2, 'This Month': 3, 'Later': 4, 'No Date': 5 }
+    return (order[a.range] || 99) - (order[b.range] || 99)
+  })
+
   return (
     <div className="space-y-6">
-      {/* Incoming Tickets Chart */}
-      {skillData.length > 0 && (
-        <div className="card">
-          <h3 className="text-lg font-semibold text-pnc-blue mb-4">📥 Incoming Tickets</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={skillData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="skill" angle={-45} textAnchor="end" height={100} stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#f9fafb', 
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
-                }}
-              />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                {skillData.map((entry, index) => {
-                  // Excel-like professional colors
-                  const colors = ['#4472C4', '#70AD47', '#FFC000', '#ED7D31', '#5B9BD5', '#A5A5A5', '#7030A0', '#C55A11', '#70AD47', '#FFC000']
-                  return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                })}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      {/* Incoming Tickets Charts - Priority and Due Date Trends */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Priority Distribution */}
+        {priorityData.length > 0 && (
+          <div className="card">
+            <h3 className="text-lg font-semibold text-pnc-blue mb-4">📊 Priority Distribution</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={priorityData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="priority" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#f9fafb', 
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                  {priorityData.map((entry, index) => {
+                    // Color by priority
+                    const priorityColors = {
+                      'High': '#C55A11',      // Dark orange/red
+                      'Medium': '#FFC000',    // Yellow/amber
+                      'Low': '#70AD47',       // Green
+                      'Not Set': '#A5A5A5'    // Gray
+                    }
+                    const color = priorityColors[entry.priority] || '#4472C4'
+                    return <Cell key={`cell-${index}`} fill={color} />
+                  })}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {/* Due Date Trends */}
+        {dueDateData.length > 0 && (
+          <div className="card">
+            <h3 className="text-lg font-semibold text-pnc-blue mb-4">📅 Due Date Trends</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={dueDateData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="range" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#f9fafb', 
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                  {dueDateData.map((entry, index) => {
+                    // Color by urgency
+                    const dateColors = {
+                      'Overdue': '#C55A11',      // Dark red/orange
+                      'This Week': '#ED7D31',    // Orange
+                      'Next Week': '#FFC000',    // Yellow
+                      'This Month': '#5B9BD5',   // Light blue
+                      'Later': '#70AD47',        // Green
+                      'No Date': '#A5A5A5'       // Gray
+                    }
+                    const color = dateColors[entry.range] || '#4472C4'
+                    return <Cell key={`cell-${index}`} fill={color} />
+                  })}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </div>
 
       {/* Tickets Table */}
       <div className="card">

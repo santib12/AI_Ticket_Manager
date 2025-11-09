@@ -68,7 +68,7 @@ async def get_tickets():
         
         # Get the backend directory
         current_dir = Path(__file__).parent
-        tickets_path = os.path.join(current_dir, "data", "tickets_fixed.csv")
+        tickets_path = os.path.join(current_dir, "data", "tickets_40.csv")
         
         if not os.path.exists(tickets_path):
             raise HTTPException(status_code=404, detail="Tickets CSV file not found")

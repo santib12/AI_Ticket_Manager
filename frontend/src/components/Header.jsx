@@ -23,9 +23,6 @@ function Header({ onToggleSidebar }) {
               <h1 className="text-3xl font-bold" style={{ color: '#003087' }}>
                 Ticket Manager
               </h1>
-              <p className="mt-0.5 text-sm" style={{ color: '#003087' }}>
-                Intelligent ticket assignment with transparent AI reasoning
-              </p>
             </div>
           </div>
 
