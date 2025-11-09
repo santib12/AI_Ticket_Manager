@@ -74,12 +74,12 @@ Ticket:
 
 Current distribution: {assignment_summary}
 
-Rules: 1) Distribute evenly, 2) Match skills, 3) Consider capacity, 4) Consider job title relevance (e.g., Backend Engineer for backend tickets, Frontend Developer for frontend tickets, DevOps Engineer for infrastructure tickets), 5) Prefer less-assigned devs.
+Rules: 1) Distribute evenly, 2) Match skills, 3) Consider capacity, 4) Consider job title relevance, 5) Prefer less-assigned devs.
 
 Respond with JSON:
 {{
     "assigned_to": "DeveloperName",
-    "reason": "Provide a DETAILED explanation (4-6 sentences) that MUST include: (1) The selected developer's specific parameters: job title, availability percentage, current workload, base capacity, remaining capacity after this assignment, experience years, and relevant skills. (2) Why this developer was chosen: job title relevance analysis (how their role aligns with the ticket type), skill match analysis (exact skill match or closest match), capacity analysis (can they handle this ticket's story points), workload balance (how this maintains even distribution), and experience relevance. (3) Comparison with 1-2 alternative developers: why they were NOT chosen, including their job titles and how they compare (e.g., 'Alice (Senior Software Engineer) has 85% availability and 10 pts workload, giving her 15.5 base capacity with 12 pts remaining, but her role is more generalist and she lacks React skills. Bob (Frontend Developer) has React skills and 12.3 remaining capacity, and his job title is highly relevant for this frontend ticket, but has already been assigned 3 tickets in this batch, so choosing him would unbalance distribution. Charlie (Full Stack Developer) has React skills, 11.2 remaining capacity, a relevant job title for this full-stack ticket, and only 1 ticket assigned, making him the optimal choice for balanced distribution.')"
+    "reason": "Provide a brief but detailed explanation (1-2 sentences) that includes: (1) Selected developer's key parameters (job title, availability %, remaining capacity, relevant skills), (2) Why chosen (job title match, skill match, capacity fit, workload balance). Use specific numbers. Be concise and direct."
 }}"""
         
         max_retries = 2  # Reduced retries for speed
@@ -95,7 +95,7 @@ Respond with JSON:
                     messages=[
                         {
                             "role": "system",
-                            "content": "You are an expert at matching tickets to developers. Your reasoning MUST be highly detailed and include: (1) Specific parameter values for the selected developer (job title, availability %, current workload, base capacity, remaining capacity, experience years, skills), (2) Job title relevance analysis (how the developer's role aligns with the ticket type), (3) Explicit skill match analysis, (4) Capacity calculations showing why they can handle this ticket, (5) Workload distribution impact, (6) Direct comparisons with 2-3 alternative developers explaining why they were not chosen with their specific parameters including job titles. Always use exact numbers from the developer data. Respond with valid JSON only."
+                            "content": "You are an expert at matching tickets to developers. Provide brief but detailed explanations (1-2 sentences) that include: (1) Selected developer's key parameters (job title, availability %, remaining capacity, relevant skills), (2) Why chosen (job title match, skill match, capacity fit, workload balance). Use specific numbers. Be concise and direct. Respond with valid JSON only."
                         },
                         {
                             "role": "user",
@@ -153,7 +153,7 @@ Respond with JSON:
                     result = {
                         "ticket_id": int(ticket['id']),
                         "assigned_to": assigned_name,
-                        "reason": f"Assigned via fallback algorithm after GPT parsing error. {assigned_name} ({title}) was selected with {dev['availability']:.1%} availability, {dev['current_workload']} pts current workload, {capacity:.2f} base capacity, {remaining_capacity:.2f} remaining capacity, {dev['experience_years']} years experience, and skills: {dev['skills']}. The job title '{title}' is relevant for this ticket type. This assignment maintains workload balance with {assigned_tickets_before} tickets already assigned in this batch."
+                        "reason": f"{assigned_name} ({title}) has {dev['availability']:.1%} availability, {remaining_capacity:.2f} remaining capacity, and {dev['skills']}. Job title '{title}' matches ticket type. Balanced workload ({assigned_tickets_before} tickets assigned)."
                     }
                     assigned = True
                 else:
@@ -193,7 +193,7 @@ Respond with JSON:
                     result = {
                         "ticket_id": int(ticket['id']),
                         "assigned_to": assigned_name,
-                        "reason": f"Assigned via fallback algorithm after API error ({error_msg}). {assigned_name} ({title}) was selected with {dev['availability']:.1%} availability, {dev['current_workload']} pts current workload, {capacity:.2f} base capacity, {remaining_capacity:.2f} remaining capacity, {dev['experience_years']} years experience, and skills: {dev['skills']}. The job title '{title}' is relevant for this ticket type. This assignment maintains workload balance with {assigned_tickets_before} tickets already assigned in this batch."
+                        "reason": f"{assigned_name} ({title}) has {dev['availability']:.1%} availability, {remaining_capacity:.2f} remaining capacity, and {dev['skills']}. Job title '{title}' matches ticket type. Balanced workload ({assigned_tickets_before} tickets assigned)."
                     }
                     assigned = True
                 else:
@@ -235,7 +235,7 @@ Respond with JSON:
                 assignments.append({
                     "ticket_id": int(ticket['id']),
                     "assigned_to": assigned_name,
-                    "reason": f"Assigned via fallback algorithm after parallel processing error ({str(e)}). {assigned_name} ({title}) was selected with {dev['availability']:.1%} availability, {dev['current_workload']} pts current workload, {capacity:.2f} base capacity, {remaining_capacity:.2f} remaining capacity, {dev['experience_years']} years experience, and skills: {dev['skills']}. The job title '{title}' is relevant for this ticket type. This assignment maintains workload balance with {assigned_tickets_before} tickets already assigned in this batch."
+                    "reason": f"{assigned_name} ({title}) has {dev['availability']:.1%} availability, {remaining_capacity:.2f} remaining capacity, and {dev['skills']}. Job title '{title}' matches ticket type. Balanced workload ({assigned_tickets_before} tickets assigned)."
                 })
     
     # Sort assignments by ticket_id to maintain order

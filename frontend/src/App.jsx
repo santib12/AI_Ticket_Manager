@@ -7,7 +7,7 @@ import AssignmentApproval from './components/AssignmentApproval'
 import DeveloperDetail from './components/DeveloperDetail'
 import DeveloperView from './components/DeveloperView'
 import LoadingSpinner from './components/LoadingSpinner'
-import { assignTickets, getTickets, getDevelopers } from './services/api'
+import { assignTickets, getTickets, getDevelopers, saveAssignments, getAssignments, reassignTicket, removeAssignment, resetAllAssignments } from './services/api'
 
 
 function App() {
@@ -25,12 +25,50 @@ function App() {
   const [storyPointsFilter, setStoryPointsFilter] = useState('all') // Filter by story points
   const [difficultyFilter, setDifficultyFilter] = useState('all') // Filter by priority (difficulty)
   const [developers, setDevelopers] = useState([]) // List of all developers
+  const [assignedTicketIds, setAssignedTicketIds] = useState(new Set()) // Track which tickets are already assigned
 
-  // Load tickets and developers on component mount
+  // Load tickets, developers, and assigned ticket IDs on component mount
   useEffect(() => {
     loadTickets()
     loadDevelopers()
+    loadAssignedTicketIds() // Load assigned ticket IDs to filter them out
   }, [])
+
+  const loadAssignedTicketIds = async () => {
+    try {
+      const result = await getAssignments('active')
+      if (result && result.status === 'success' && result.assignments) {
+        const assignedIds = new Set(result.assignments.map(a => a.ticket_id))
+        setAssignedTicketIds(assignedIds)
+      }
+    } catch (error) {
+      console.error('Error loading assigned ticket IDs:', error)
+    }
+  }
+
+  const loadAssignmentsFromDB = async () => {
+    try {
+      const result = await getAssignments('active')
+      if (result && result.status === 'success' && result.assignments && result.assignments.length > 0) {
+        // Convert database assignments to the format expected by the UI
+        const formattedAssignments = result.assignments.map(a => ({
+          ticket_id: a.ticket_id,
+          assigned_to: a.assigned_to,
+          reason: a.reason || 'No reason provided',
+          assignment_id: a.id // Store assignment ID for reassignment/removal
+        }))
+        
+        setFinalizedAssignments({
+          status: "success",
+          total_tickets: result.total,
+          assignments: formattedAssignments
+        })
+      }
+    } catch (error) {
+      console.error('Error loading assignments from database:', error)
+      // Don't show error to user, just log it - assignments might not exist yet
+    }
+  }
 
   const loadDevelopers = async () => {
     try {
@@ -61,7 +99,8 @@ function App() {
   const getFilteredTickets = () => {
     if (!tickets || tickets.length === 0) return []
     
-    let filtered = [...tickets]
+    // First, filter out already assigned tickets
+    let filtered = tickets.filter(ticket => !assignedTicketIds.has(parseInt(ticket.id)))
     const initialCount = filtered.length
     
     // Step 1: Filter by story points first
@@ -122,6 +161,8 @@ function App() {
 
     setLoading(true)
     setError(null)
+    setAssignments(null) // Clear any previous assignments
+    setFinalizedAssignments(null) // Clear any old finalized assignments to show approval flow
     
     try {
       // Convert filtered tickets array to CSV format for the API
@@ -130,7 +171,7 @@ function App() {
       const file = new File([blob], 'tickets.csv', { type: 'text/csv' })
       
       const result = await assignTickets(file)
-      setAssignments(result)
+      setAssignments(result) // This will trigger the approval flow
     } catch (err) {
       setError(err.message || 'An error occurred while assigning tickets')
     } finally {
@@ -160,13 +201,22 @@ function App() {
     return csvRows.join('\n')
   }
 
-  const handleApproveSelected = (approvedTickets, rejectedTicketsData) => {
+  const handleApproveSelected = async (approvedTickets, rejectedTicketsData) => {
     // Convert approved tickets to assignment format
     const approvedAssignments = approvedTickets.map(ticket => ({
       ticket_id: ticket.ticket_id,
       assigned_to: ticket.assigned_to,
       reason: ticket.reason
     }))
+    
+    // Save to database
+    try {
+      await saveAssignments(approvedAssignments)
+      console.log('Assignments saved to database successfully')
+    } catch (error) {
+      console.error('Error saving assignments to database:', error)
+      // Still update UI even if database save fails
+    }
     
     // Store rejected tickets grouped by developer
     const rejectedByDeveloper = {}
@@ -179,11 +229,52 @@ function App() {
     })
     setRejectedTickets(rejectedByDeveloper)
     
-    setFinalizedAssignments({
-      status: "success",
-      total_tickets: approvedTickets.length,
-      assignments: approvedAssignments
-    })
+    // Reload assignments from database to get assignment IDs
+    try {
+      const result = await getAssignments('active')
+      if (result && result.status === 'success' && result.assignments) {
+        const formattedAssignments = result.assignments.map(a => ({
+          ticket_id: a.ticket_id,
+          assigned_to: a.assigned_to,
+          reason: a.reason || 'No reason provided',
+          assignment_id: a.id
+        }))
+        
+        // Update assigned ticket IDs set
+        const newAssignedIds = new Set(result.assignments.map(a => a.ticket_id))
+        setAssignedTicketIds(newAssignedIds)
+        
+        setFinalizedAssignments({
+          status: "success",
+          total_tickets: result.total,
+          assignments: formattedAssignments
+        })
+      } else {
+        // Fallback to local state if database query fails
+        // Update assigned ticket IDs from approved tickets
+        const newAssignedIds = new Set(approvedTickets.map(t => t.ticket_id))
+        setAssignedTicketIds(prev => new Set([...prev, ...newAssignedIds]))
+        
+        setFinalizedAssignments({
+          status: "success",
+          total_tickets: approvedTickets.length,
+          assignments: approvedAssignments
+        })
+      }
+    } catch (error) {
+      console.error('Error reloading assignments:', error)
+      // Fallback to local state
+      // Update assigned ticket IDs from approved tickets
+      const newAssignedIds = new Set(approvedTickets.map(t => t.ticket_id))
+      setAssignedTicketIds(prev => new Set([...prev, ...newAssignedIds]))
+      
+      setFinalizedAssignments({
+        status: "success",
+        total_tickets: approvedTickets.length,
+        assignments: approvedAssignments
+      })
+    }
+    
     setAssignments(null) // Clear pending approvals
     
     // Auto-scroll to assignment results after a brief delay
@@ -202,6 +293,32 @@ function App() {
     setSelectedDeveloper(null)
   }
 
+  const handleResetAllAssignments = async () => {
+    if (!window.confirm('Are you sure you want to reset all assigned tickets? This will remove all ticket assignments from developers and make all tickets available for assignment again.')) {
+      return
+    }
+
+    try {
+      const result = await resetAllAssignments('Reset all assignments by user')
+      console.log('All assignments reset successfully:', result)
+      
+      // Clear assigned ticket IDs
+      setAssignedTicketIds(new Set())
+      
+      // Clear finalized assignments
+      setFinalizedAssignments(null)
+      
+      // Show success message
+      alert(`Successfully reset ${result.count || 0} assignments. All tickets are now available for assignment.`)
+      
+      // Reload assigned ticket IDs (should be empty now)
+      await loadAssignedTicketIds()
+    } catch (error) {
+      console.error('Error resetting assignments:', error)
+      alert(`Error resetting assignments: ${error.message}`)
+    }
+  }
+
   const handleSelectDeveloper = (developer) => {
     setSelectedDeveloper(developer)
     setSidebarOpen(false)
@@ -212,40 +329,126 @@ function App() {
     setSelectedDeveloper(null)
   }
 
-  const handleReassignTicket = (ticketId, newDeveloperName) => {
+  const handleReassignTicket = async (ticketId, newDeveloperName) => {
     if (!finalizedAssignments) return
 
-    // Update the assignment
-    const updatedAssignments = finalizedAssignments.assignments.map(assignment => {
-      if (assignment.ticket_id === ticketId) {
-        return {
-          ...assignment,
-          assigned_to: newDeveloperName,
-          reason: `Manually reassigned from ${assignment.assigned_to} to ${newDeveloperName}. ${assignment.reason}`
-        }
-      }
-      return assignment
-    })
+    // Find the assignment
+    const assignment = finalizedAssignments.assignments.find(a => a.ticket_id === ticketId)
+    if (!assignment || !assignment.assignment_id) {
+      console.error('Assignment not found or missing assignment_id')
+      return
+    }
 
-    setFinalizedAssignments({
-      ...finalizedAssignments,
-      assignments: updatedAssignments
-    })
+    // Update in database
+    try {
+      await reassignTicket(assignment.assignment_id, newDeveloperName, `Manually reassigned from ${assignment.assigned_to} to ${newDeveloperName}`)
+      console.log('Ticket reassigned in database successfully')
+      
+      // Reload assignments from database
+      const result = await getAssignments('active')
+      if (result && result.status === 'success' && result.assignments) {
+        const formattedAssignments = result.assignments.map(a => ({
+          ticket_id: a.ticket_id,
+          assigned_to: a.assigned_to,
+          reason: a.reason || 'No reason provided',
+          assignment_id: a.id
+        }))
+        
+        // Update assigned ticket IDs set (reassignment doesn't change which tickets are assigned)
+        const newAssignedIds = new Set(result.assignments.map(a => a.ticket_id))
+        setAssignedTicketIds(newAssignedIds)
+        
+        setFinalizedAssignments({
+          status: "success",
+          total_tickets: result.total,
+          assignments: formattedAssignments
+        })
+      }
+    } catch (error) {
+      console.error('Error reassigning ticket in database:', error)
+      // Fallback to local state update
+      const updatedAssignments = finalizedAssignments.assignments.map(a => {
+        if (a.ticket_id === ticketId) {
+          return {
+            ...a,
+            assigned_to: newDeveloperName,
+            reason: `Manually reassigned from ${a.assigned_to} to ${newDeveloperName}. ${a.reason}`
+          }
+        }
+        return a
+      })
+      setFinalizedAssignments({
+        ...finalizedAssignments,
+        assignments: updatedAssignments
+      })
+    }
   }
 
-  const handleRemoveTicket = (ticketId) => {
+  const handleRemoveTicket = async (ticketId) => {
     if (!finalizedAssignments) return
 
-    // Remove the assignment
-    const updatedAssignments = finalizedAssignments.assignments.filter(
-      assignment => assignment.ticket_id !== ticketId
-    )
+    // Find the assignment
+    const assignment = finalizedAssignments.assignments.find(a => a.ticket_id === ticketId)
+    if (!assignment || !assignment.assignment_id) {
+      console.error('Assignment not found or missing assignment_id')
+      return
+    }
 
-    setFinalizedAssignments({
-      ...finalizedAssignments,
-      assignments: updatedAssignments,
-      total_tickets: updatedAssignments.length
-    })
+    // Remove from database
+    try {
+      await removeAssignment(assignment.assignment_id, 'Removed by user')
+      console.log('Ticket removed from database successfully')
+      
+      // Reload assignments from database
+      const result = await getAssignments('active')
+      if (result && result.status === 'success' && result.assignments) {
+        const formattedAssignments = result.assignments.map(a => ({
+          ticket_id: a.ticket_id,
+          assigned_to: a.assigned_to,
+          reason: a.reason || 'No reason provided',
+          assignment_id: a.id
+        }))
+        
+        // Update assigned ticket IDs set (remove the removed ticket)
+        const newAssignedIds = new Set(result.assignments.map(a => a.ticket_id))
+        setAssignedTicketIds(newAssignedIds)
+        
+        setFinalizedAssignments({
+          status: "success",
+          total_tickets: result.total,
+          assignments: formattedAssignments
+        })
+      } else {
+        // Fallback to local state update
+        const updatedAssignments = finalizedAssignments.assignments.filter(
+          a => a.ticket_id !== ticketId
+        )
+        
+        // Remove ticket ID from assigned set
+        setAssignedTicketIds(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(ticketId)
+          return newSet
+        })
+        
+        setFinalizedAssignments({
+          ...finalizedAssignments,
+          assignments: updatedAssignments,
+          total_tickets: updatedAssignments.length
+        })
+      }
+    } catch (error) {
+      console.error('Error removing ticket from database:', error)
+      // Fallback to local state update
+      const updatedAssignments = finalizedAssignments.assignments.filter(
+        a => a.ticket_id !== ticketId
+      )
+      setFinalizedAssignments({
+        ...finalizedAssignments,
+        assignments: updatedAssignments,
+        total_tickets: updatedAssignments.length
+      })
+    }
   }
 
   return (
@@ -359,6 +562,10 @@ function App() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-blue-800 text-lg">Client Tickets Loaded Successfully</h3>
+                        <p className="text-sm text-blue-600 mt-1">
+                          {tickets.length - assignedTicketIds.size} tickets available to assign
+                          {assignedTicketIds.size > 0 && ` (${assignedTicketIds.size} already assigned)`}
+                        </p>
                       </div>
                     </div>
                     <button
@@ -372,12 +579,24 @@ function App() {
                 </div>
 
                 <div className="slide-in">
-                  <TicketPreview tickets={tickets} />
+                  <TicketPreview tickets={tickets.filter(ticket => !assignedTicketIds.has(parseInt(ticket.id)))} />
                 </div>
                 
                 <div className="card slide-in">
                   <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-pnc-blue mb-2">Ready to Assign</h2>
+                    <div className="flex items-center justify-between mb-2">
+                      <h2 className="text-2xl font-bold text-pnc-blue">Ready to Assign</h2>
+                      {assignedTicketIds.size > 0 && (
+                        <button
+                          onClick={handleResetAllAssignments}
+                          className="px-4 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-medium flex items-center space-x-2"
+                          title="Reset all assigned tickets"
+                        >
+                          <span>🔄</span>
+                          <span>Reset All Assignments</span>
+                        </button>
+                      )}
+                    </div>
                     <p className="text-pnc-blue mb-4">
                       Select filters and click the button below to assign tickets to developers using AI.
                     </p>

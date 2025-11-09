@@ -24,3 +24,7 @@ class TicketAssignment(BaseModel):
     ticket_description: Optional[str] = None
     story_points: Optional[int] = None
 
+
+class ResetAssignmentsRequest(BaseModel):
+    """Request model for resetting all assignments."""
+    reason: Optional[str] = None
