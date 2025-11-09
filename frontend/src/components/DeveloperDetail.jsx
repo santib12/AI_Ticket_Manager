@@ -85,8 +85,8 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
               </svg>
             </button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">{developer.name}</h1>
-              <p className="text-gray-600 mt-1">Developer Assignment Details</p>
+              <h1 className="text-3xl font-bold text-pnc-blue">{developer.name}</h1>
+              <p className="text-pnc-blue mt-1">Developer Assignment Details</p>
             </div>
           </div>
           {totalAssigned > 0 && (
@@ -105,24 +105,24 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
         {/* Developer Info */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-slate-50 rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">Availability</div>
+            <div className="text-sm text-pnc-blue mb-1">Availability</div>
             <div className="text-2xl font-bold text-slate-700">
               {developer.availability_pct || (parseFloat(developer.availability || 0) * 100).toFixed(1)}%
             </div>
           </div>
           <div className="bg-slate-50 rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">Current Workload</div>
-            <div className="text-2xl font-bold text-slate-700">{developer.current_workload} pts</div>
+            <div className="text-sm text-pnc-blue mb-1">Current Workload</div>
+            <div className="text-2xl font-bold text-pnc-blue">{developer.current_workload} pts</div>
           </div>
           <div className="bg-slate-50 rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">Capacity Score</div>
-            <div className="text-2xl font-bold text-slate-700">
+            <div className="text-sm text-pnc-blue mb-1">Capacity Score</div>
+            <div className="text-2xl font-bold text-pnc-blue">
               {parseFloat(developer.capacity || 0).toFixed(2)}
             </div>
           </div>
           <div className="bg-slate-50 rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">Experience</div>
-            <div className="text-2xl font-bold text-slate-700">{developer.experience_years} years</div>
+            <div className="text-sm text-pnc-blue mb-1">Experience</div>
+            <div className="text-2xl font-bold text-pnc-blue">{developer.experience_years} years</div>
           </div>
         </div>
 
@@ -153,7 +153,7 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {skillData.length > 0 && (
             <div className="card">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Skills Distribution</h3>
+              <h3 className="text-lg font-semibold text-pnc-blue mb-4">Skills Distribution</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={skillData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -174,7 +174,7 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
 
           {priorityData.length > 0 && (
             <div className="card">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Priority Distribution</h3>
+              <h3 className="text-lg font-semibold text-pnc-blue mb-4">Priority Distribution</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
@@ -209,12 +209,12 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
 
       {/* Assigned Tickets List */}
       <div className="card">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+        <h2 className="text-2xl font-bold text-pnc-blue mb-4">
           📋 Assigned Tickets ({totalAssigned})
         </h2>
         
         {totalAssigned === 0 ? (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12 text-pnc-blue opacity-70">
             <p className="text-lg">No tickets assigned to {developer.name} yet</p>
             <p className="text-sm mt-2">Assignments will appear here after approval</p>
           </div>
@@ -228,9 +228,9 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <span className="font-bold text-lg text-gray-800">#{ticket.id}</span>
+                      <span className="font-bold text-lg text-pnc-blue">#{ticket.id}</span>
                       {ticket.title && (
-                        <span className="text-gray-700 font-medium">{ticket.title}</span>
+                        <span className="text-pnc-blue font-medium">{ticket.title}</span>
                       )}
                       <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">
                         {ticket.required_skill}
@@ -245,10 +245,10 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
                         </span>
                       )}
                     </div>
-                    <p className="text-gray-600 text-sm mb-2">{ticket.description}</p>
+                    <p className="text-pnc-blue text-sm mb-2">{ticket.description}</p>
                     <div className="flex items-center space-x-4 text-sm">
                       {ticket.story_points && (
-                        <span className="text-gray-500">{ticket.story_points} story points</span>
+                        <span className="text-pnc-blue opacity-70">{ticket.story_points} story points</span>
                       )}
                     </div>
                     <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -284,9 +284,9 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <span className="font-bold text-lg text-gray-800">#{ticket.id || ticket.ticket_id}</span>
+                      <span className="font-bold text-lg text-pnc-blue">#{ticket.id || ticket.ticket_id}</span>
                       {ticket.title && (
-                        <span className="text-gray-700 font-medium">{ticket.title}</span>
+                        <span className="text-pnc-blue font-medium">{ticket.title}</span>
                       )}
                       <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">
                         {ticket.required_skill}
@@ -301,7 +301,7 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
                         </span>
                       )}
                     </div>
-                    <p className="text-gray-600 text-sm mb-2">{ticket.description}</p>
+                    <p className="text-pnc-blue text-sm mb-2">{ticket.description}</p>
                     {ticket.reason && (
                       <div className="mt-2 p-3 bg-red-100 border border-red-300 rounded-lg">
                         <p className="text-sm text-red-800">

@@ -8,11 +8,11 @@ function LoadingSpinner({ message = "Loading...", size = "md" }) {
   return (
     <div className="flex flex-col items-center justify-center py-12">
       <div className={`${sizeClasses[size]} relative`}>
-        <div className="absolute inset-0 border-4 border-primary-200 rounded-full"></div>
-        <div className="absolute inset-0 border-4 border-primary-500 rounded-full border-t-transparent animate-spin"></div>
+        <div className="absolute inset-0 border-4 border-blue-200 rounded-full"></div>
+        <div className="absolute inset-0 border-4 border-pnc-blue rounded-full border-t-transparent animate-spin"></div>
       </div>
       {message && (
-        <p className="mt-4 text-gray-600 font-medium">{message}</p>
+        <p className="mt-4 text-pnc-blue font-medium">{message}</p>
       )}
     </div>
   )

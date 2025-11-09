@@ -119,8 +119,8 @@ function AssignmentResults({ assignments, tickets, onReset }) {
       <div className="card fade-in">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">📋 Assignment Results</h2>
-            <p className="text-gray-500 text-sm mt-1">Click on any ticket to view AI reasoning</p>
+            <h2 className="text-2xl font-bold text-pnc-blue">📋 Assignment Results</h2>
+            <p className="text-pnc-blue text-sm mt-1 opacity-70">Click on any ticket to view AI reasoning</p>
           </div>
           <button onClick={downloadCSV} className="btn-secondary text-sm">
             📥 Download CSV
@@ -131,17 +131,17 @@ function AssignmentResults({ assignments, tickets, onReset }) {
           {mergedData.map((item, idx) => (
             <div
               key={idx}
-              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:border-primary-300 slide-in"
+              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:border-pnc-blue slide-in"
               style={{ animationDelay: `${idx * 0.05}s` }}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <span className="font-bold text-lg text-gray-800">#{item.id}</span>
+                    <span className="font-bold text-lg text-pnc-blue">#{item.id}</span>
                     {item.title && (
-                      <span className="text-gray-700 font-medium">{item.title}</span>
+                      <span className="text-pnc-blue font-medium">{item.title}</span>
                     )}
-                    <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium">
+                    <span className="px-2 py-1 bg-blue-100 text-pnc-blue rounded-full text-xs font-medium">
                       {item.required_skill}
                     </span>
                     {item.priority && (
@@ -154,21 +154,21 @@ function AssignmentResults({ assignments, tickets, onReset }) {
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 text-sm mb-2">{item.description}</p>
+                  <p className="text-pnc-blue text-sm mb-2">{item.description}</p>
                   <div className="flex items-center space-x-4 text-sm">
-                    <span className="text-gray-500">Assigned to:</span>
-                    <span className="font-semibold text-primary-600">{item.assigned_to}</span>
+                    <span className="text-pnc-blue opacity-70">Assigned to:</span>
+                    <span className="font-semibold text-pnc-blue">{item.assigned_to}</span>
                     {item.story_points && (
                       <>
-                        <span className="text-gray-500">•</span>
-                        <span className="text-gray-500">{item.story_points} story points</span>
+                        <span className="text-pnc-blue opacity-70">•</span>
+                        <span className="text-pnc-blue opacity-70">{item.story_points} story points</span>
                       </>
                     )}
                   </div>
                 </div>
                 <button
                   onClick={() => setExpandedTicket(expandedTicket === idx ? null : idx)}
-                  className="ml-4 text-primary-600 hover:text-primary-700 text-sm font-medium"
+                  className="ml-4 text-pnc-blue hover:text-pnc-blue-dark text-sm font-medium"
                 >
                   {expandedTicket === idx ? 'Hide' : 'Show'} Reasoning
                 </button>
@@ -189,7 +189,7 @@ function AssignmentResults({ assignments, tickets, onReset }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Developer Workload - Tickets */}
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">👥 Tickets per Developer</h3>
+          <h3 className="text-lg font-semibold text-pnc-blue mb-4">👥 Tickets per Developer</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={developerData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -210,7 +210,7 @@ function AssignmentResults({ assignments, tickets, onReset }) {
         {/* Developer Workload - Story Points */}
         {developerData.some(d => d.storyPoints > 0) && (
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">📊 Story Points per Developer</h3>
+            <h3 className="text-lg font-semibold text-pnc-blue mb-4">📊 Story Points per Developer</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={developerData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -231,7 +231,7 @@ function AssignmentResults({ assignments, tickets, onReset }) {
 
         {/* Ticket Distribution Pie Chart */}
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">🥧 Ticket Distribution</h3>
+          <h3 className="text-lg font-semibold text-pnc-blue mb-4">🥧 Ticket Distribution</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie

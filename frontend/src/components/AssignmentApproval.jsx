@@ -92,20 +92,20 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
   return (
     <div className="space-y-6">
       {/* Approval Status Banner */}
-      <div className="card bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200 fade-in">
+      <div className="card bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200 fade-in">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-6">
             <div>
-              <div className="text-2xl font-bold text-slate-800">{approvedCount}</div>
-              <div className="text-sm text-slate-600">Approved</div>
+              <div className="text-2xl font-bold text-pnc-blue">{approvedCount}</div>
+              <div className="text-sm text-pnc-blue">Approved</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-600">{pendingCount}</div>
-              <div className="text-sm text-slate-600">Pending</div>
+              <div className="text-2xl font-bold text-pnc-blue">{pendingCount}</div>
+              <div className="text-sm text-pnc-blue">Pending</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-500">{rejectedCount}</div>
-              <div className="text-sm text-slate-600">Rejected</div>
+              <div className="text-2xl font-bold text-pnc-blue">{rejectedCount}</div>
+              <div className="text-sm text-pnc-blue">Rejected</div>
             </div>
           </div>
           <div className="flex space-x-2">
@@ -127,11 +127,10 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
               }}
               className={`btn-primary text-sm relative z-10 ${
                 approvedCount === 0 
-                  ? 'opacity-50 cursor-not-allowed pointer-events-none' 
+                  ? 'cursor-not-allowed' 
                   : 'cursor-pointer'
               }`}
               disabled={approvedCount === 0}
-              style={{ pointerEvents: approvedCount === 0 ? 'none' : 'auto' }}
             >
               Finalize {approvedCount} Approved
             </button>
@@ -143,8 +142,8 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
       <div className="card fade-in">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">📋 Pending Approvals</h2>
-            <p className="text-gray-500 text-sm mt-1">
+            <h2 className="text-2xl font-bold text-pnc-blue">📋 Pending Approvals</h2>
+            <p className="text-pnc-blue text-sm mt-1 opacity-70">
               Review and approve each AI-suggested assignment ({pendingTickets.length} remaining)
             </p>
           </div>
@@ -159,11 +158,11 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <span className="font-bold text-lg text-gray-800">#{item.id}</span>
+                    <span className="font-bold text-lg text-pnc-blue">#{item.id}</span>
                     {item.title && (
-                      <span className="text-gray-700 font-medium">{item.title}</span>
+                      <span className="text-pnc-blue font-medium">{item.title}</span>
                     )}
-                    <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">
+                    <span className="px-2 py-1 bg-blue-100 text-pnc-blue rounded-full text-xs font-medium">
                       {item.required_skill}
                     </span>
                     {item.priority && (
@@ -176,14 +175,14 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 text-sm mb-2">{item.description}</p>
+                  <p className="text-pnc-blue text-sm mb-2">{item.description}</p>
                   <div className="flex items-center space-x-4 text-sm">
-                    <span className="text-gray-500">AI Suggests:</span>
-                    <span className="font-semibold text-slate-600">{item.assigned_to}</span>
+                    <span className="text-pnc-blue opacity-70">AI Suggests:</span>
+                    <span className="font-semibold text-pnc-blue">{item.assigned_to}</span>
                     {item.story_points && (
                       <>
-                        <span className="text-gray-500">•</span>
-                        <span className="text-gray-500">{item.story_points} story points</span>
+                        <span className="text-pnc-blue opacity-70">•</span>
+                        <span className="text-pnc-blue opacity-70">{item.story_points} story points</span>
                       </>
                     )}
                   </div>
@@ -217,10 +216,10 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
       {approvedTicketsList.length > 0 && (
         <div className="card fade-in">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-800">✓ Approved Assignments ({approvedCount})</h2>
+            <h2 className="text-xl font-bold text-pnc-blue">✓ Approved Assignments ({approvedCount})</h2>
             <button
               onClick={() => setShowRejected(!showRejected)}
-              className="text-sm text-slate-600 hover:text-slate-800"
+              className="text-sm text-pnc-blue hover:text-pnc-blue-dark"
             >
               {showRejected ? 'Hide' : 'Show'} Rejected ({rejectedCount})
             </button>
@@ -228,21 +227,21 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
 
           {/* Summary Metrics for Approved */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-slate-50 rounded-lg p-3">
-              <div className="text-2xl font-bold text-slate-700">{approvedCount}</div>
-              <div className="text-sm text-slate-600">Approved Tickets</div>
+            <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+              <div className="text-2xl font-bold text-pnc-blue">{approvedCount}</div>
+              <div className="text-sm text-pnc-blue">Approved Tickets</div>
             </div>
-            <div className="bg-slate-50 rounded-lg p-3">
-              <div className="text-2xl font-bold text-slate-700">{uniqueDevelopers}</div>
-              <div className="text-sm text-slate-600">Developers</div>
+            <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+              <div className="text-2xl font-bold text-pnc-blue">{uniqueDevelopers}</div>
+              <div className="text-sm text-pnc-blue">Developers</div>
             </div>
-            <div className="bg-slate-50 rounded-lg p-3">
-              <div className="text-2xl font-bold text-slate-700">{avgWorkload}</div>
-              <div className="text-sm text-slate-600">Avg Workload</div>
+            <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+              <div className="text-2xl font-bold text-pnc-blue">{avgWorkload}</div>
+              <div className="text-sm text-pnc-blue">Avg Workload</div>
             </div>
-            <div className="bg-slate-50 rounded-lg p-3">
-              <div className="text-2xl font-bold text-slate-700">{totalPoints}</div>
-              <div className="text-sm text-slate-600">Total Points</div>
+            <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+              <div className="text-2xl font-bold text-pnc-blue">{totalPoints}</div>
+              <div className="text-sm text-pnc-blue">Total Points</div>
             </div>
           </div>
 
@@ -250,7 +249,7 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
           {developerData.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Tickets per Developer</h3>
+                <h3 className="text-lg font-semibold text-pnc-blue mb-4">Tickets per Developer</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={developerData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -262,7 +261,7 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
                 </ResponsiveContainer>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Story Points per Developer</h3>
+                <h3 className="text-lg font-semibold text-pnc-blue mb-4">Story Points per Developer</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={developerData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -279,15 +278,15 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
           {/* Rejected Tickets (if shown) */}
           {showRejected && rejectedTicketsList.length > 0 && (
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">✗ Rejected Assignments ({rejectedCount})</h3>
+              <h3 className="text-lg font-semibold text-pnc-blue mb-4">✗ Rejected Assignments ({rejectedCount})</h3>
               <div className="space-y-2">
                 {rejectedTicketsList.map((item, idx) => (
                   <div key={idx} className="bg-red-50 border border-red-200 rounded-lg p-3">
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="font-medium text-gray-800">#{item.id}</span>
-                        {item.title && <span className="ml-2 text-gray-600">{item.title}</span>}
-                        <span className="ml-2 text-sm text-gray-500">→ {item.assigned_to}</span>
+                        <span className="font-medium text-pnc-blue">#{item.id}</span>
+                        {item.title && <span className="ml-2 text-pnc-blue">{item.title}</span>}
+                        <span className="ml-2 text-sm text-pnc-blue opacity-70">→ {item.assigned_to}</span>
                       </div>
                       <button
                         onClick={() => handleApprove(item.ticket_id)}

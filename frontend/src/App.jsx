@@ -9,6 +9,7 @@ import DeveloperView from './components/DeveloperView'
 import LoadingSpinner from './components/LoadingSpinner'
 import { assignTickets, getTickets } from './services/api'
 
+
 function App() {
   const [tickets, setTickets] = useState(null)
   const [assignments, setAssignments] = useState(null)
@@ -20,6 +21,9 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [selectedDeveloper, setSelectedDeveloper] = useState(null)
   const [rejectedTickets, setRejectedTickets] = useState({}) // Track rejected tickets per developer
+  const [ticketLimit, setTicketLimit] = useState('all') // Number of tickets to assign
+  const [storyPointsFilter, setStoryPointsFilter] = useState('all') // Filter by story points
+  const [difficultyFilter, setDifficultyFilter] = useState('all') // Filter by priority (difficulty)
 
   // Load tickets on component mount
   useEffect(() => {
@@ -41,9 +45,49 @@ function App() {
     }
   }
 
+  const getFilteredTickets = () => {
+    if (!tickets || tickets.length === 0) return []
+    
+    let filtered = [...tickets]
+    
+    // Filter by story points
+    if (storyPointsFilter !== 'all') {
+      const [min, max] = storyPointsFilter.split('-').map(Number)
+      filtered = filtered.filter(ticket => {
+        const points = parseInt(ticket.story_points) || 0
+        return points >= min && points <= max
+      })
+    }
+    
+    // Filter by difficulty (priority)
+    if (difficultyFilter !== 'all') {
+      filtered = filtered.filter(ticket => {
+        const priority = (ticket.priority || '').toLowerCase()
+        return priority === difficultyFilter.toLowerCase()
+      })
+    }
+    
+    // Limit number of tickets
+    if (ticketLimit !== 'all' && ticketLimit !== '20+') {
+      const limit = parseInt(ticketLimit)
+      filtered = filtered.slice(0, limit)
+    } else if (ticketLimit === '20+') {
+      // For 20+, ensure at least 20 tickets (or all if less than 20 available)
+      if (filtered.length >= 20) {
+        // Keep all tickets (no limit)
+      } else {
+        // If less than 20, keep all available
+      }
+    }
+    
+    return filtered
+  }
+
   const handleAssign = async () => {
-    if (!tickets || tickets.length === 0) {
-      setError('No tickets available to assign')
+    const filteredTickets = getFilteredTickets()
+    
+    if (!filteredTickets || filteredTickets.length === 0) {
+      setError('No tickets match the selected filters')
       return
     }
 
@@ -51,8 +95,8 @@ function App() {
     setError(null)
     
     try {
-      // Convert tickets array to CSV format for the API
-      const csvContent = convertTicketsToCSV(tickets)
+      // Convert filtered tickets array to CSV format for the API
+      const csvContent = convertTicketsToCSV(filteredTickets)
       const blob = new Blob([csvContent], { type: 'text/csv' })
       const file = new File([blob], 'tickets.csv', { type: 'text/csv' })
       
@@ -132,8 +176,10 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+    <div className="min-h-screen relative z-10 bg-gray-50">
+      <Header 
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+      />
       
       {/* Sidebar */}
       <Sidebar
@@ -144,7 +190,7 @@ function App() {
         tickets={tickets}
       />
       
-      <div className="w-full max-w-[95%] mx-auto px-6 py-8">
+      <div className="w-full max-w-[95%] mx-auto px-6 py-8 relative z-10">
         {/* Tabs */}
         <div className="mb-6">
           <div className="flex space-x-1 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
@@ -152,8 +198,8 @@ function App() {
               onClick={() => setActiveTab('upload')}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
                 activeTab === 'upload'
-                  ? 'bg-primary-500 text-white shadow-md'
-                  : 'text-gray-600 hover:text-primary-600 hover:bg-gray-50'
+                  ? 'bg-pnc-orange text-black shadow-md'
+                  : 'text-pnc-blue opacity-70 hover:text-pnc-blue hover:bg-blue-50'
               }`}
             >
               📤 Assign Tickets
@@ -162,8 +208,8 @@ function App() {
               onClick={() => setActiveTab('developers')}
               className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
                 activeTab === 'developers'
-                  ? 'bg-primary-500 text-white shadow-md'
-                  : 'text-gray-600 hover:text-primary-600 hover:bg-gray-50'
+                  ? 'bg-pnc-orange text-black shadow-md'
+                  : 'text-pnc-blue opacity-70 hover:text-pnc-blue hover:bg-blue-50'
               }`}
             >
               👥 View Developers
@@ -237,9 +283,6 @@ function App() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-blue-800 text-lg">Tickets Loaded Successfully</h3>
-                        <p className="text-blue-600 text-sm mt-1">
-                          {tickets.length} tickets loaded from <code className="bg-blue-100 px-2 py-1 rounded text-xs">backend/data/tickets_fixed.csv</code>
-                        </p>
                       </div>
                     </div>
                     <button
@@ -258,12 +301,80 @@ function App() {
                 
                 <div className="card slide-in">
                   <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Ready to Assign</h2>
-                    <p className="text-gray-600">
-                      Click the button below to assign all <span className="font-semibold text-primary-600">{tickets.length}</span> tickets to developers using AI.
+                    <h2 className="text-2xl font-bold text-pnc-blue mb-2">Ready to Assign</h2>
+                    <p className="text-pnc-blue mb-4">
+                      Select filters and click the button below to assign tickets to developers using AI.
                     </p>
-                    <div className="mt-4 p-4 bg-primary-50 rounded-lg border border-primary-200">
-                      <p className="text-sm text-primary-700">
+                    
+                    {/* Filter Controls */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      {/* Number of Tickets */}
+                      <div>
+                        <label className="block text-sm font-medium text-pnc-blue mb-2">
+                          Number of Tickets
+                        </label>
+                        <select
+                          value={ticketLimit}
+                          onChange={(e) => setTicketLimit(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pnc-blue focus:border-pnc-blue text-pnc-blue"
+                        >
+                          <option value="all">All Tickets</option>
+                          <option value="5">5 Tickets</option>
+                          <option value="10">10 Tickets</option>
+                          <option value="15">15 Tickets</option>
+                          <option value="20+">20+ Tickets</option>
+                        </select>
+                      </div>
+                      
+                      {/* Story Points Filter */}
+                      <div>
+                        <label className="block text-sm font-medium text-pnc-blue mb-2">
+                          Story Points
+                        </label>
+                        <select
+                          value={storyPointsFilter}
+                          onChange={(e) => setStoryPointsFilter(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pnc-blue focus:border-pnc-blue text-pnc-blue"
+                        >
+                          <option value="all">All Story Points</option>
+                          <option value="1-2">1-2 Points (Easy)</option>
+                          <option value="3-4">3-4 Points (Medium)</option>
+                          <option value="5-6">5-6 Points (Hard)</option>
+                          <option value="7-8">7-8 Points (Very Hard)</option>
+                        </select>
+                      </div>
+                      
+                      {/* Difficulty Filter (Priority) */}
+                      <div>
+                        <label className="block text-sm font-medium text-pnc-blue mb-2">
+                          Difficulty (Priority)
+                        </label>
+                        <select
+                          value={difficultyFilter}
+                          onChange={(e) => setDifficultyFilter(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pnc-blue focus:border-pnc-blue text-pnc-blue"
+                        >
+                          <option value="all">All Priorities</option>
+                          <option value="high">High Priority</option>
+                          <option value="medium">Medium Priority</option>
+                          <option value="low">Low Priority</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    {/* Filter Summary */}
+                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-sm text-pnc-blue">
+                        <strong>📊 Filter Summary:</strong> {getFilteredTickets().length} ticket(s) will be assigned
+                        {ticketLimit !== 'all' && ticketLimit !== '20+' && ` (limited to ${ticketLimit})`}
+                        {ticketLimit === '20+' && ` (20 or more)`}
+                        {storyPointsFilter !== 'all' && ` • Story Points: ${storyPointsFilter}`}
+                        {difficultyFilter !== 'all' && ` • Priority: ${difficultyFilter.charAt(0).toUpperCase() + difficultyFilter.slice(1)}`}
+                      </p>
+                    </div>
+                    
+                    <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-pnc-blue">
+                      <p className="text-sm text-pnc-blue">
                         <strong>💡 What happens:</strong> The AI will analyze each ticket's requirements, match them with developer skills, 
                         consider workload and availability, then provide transparent reasoning for each assignment.
                       </p>
@@ -291,7 +402,7 @@ function App() {
                       )}
                     </span>
                     {!loading && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary-600 to-primary-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-pnc-orange-dark to-pnc-orange opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                     )}
                   </button>
                   {loading && (

@@ -75,7 +75,7 @@ function Sidebar({ isOpen, onClose, onSelectDeveloper, assignments, tickets }) {
         <div className="p-4">
           {loading ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pnc-blue mx-auto"></div>
               <p className="mt-2 text-sm text-gray-500">Loading developers...</p>
             </div>
           ) : developers.length === 0 ? (
@@ -88,10 +88,10 @@ function Sidebar({ isOpen, onClose, onSelectDeveloper, assignments, tickets }) {
                 <button
                   key={idx}
                   onClick={() => onSelectDeveloper(dev)}
-                  className="w-full text-left p-4 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-all duration-200 group"
+                  className="w-full text-left p-4 rounded-lg border border-gray-200 hover:border-pnc-blue hover:bg-blue-50 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-gray-800 group-hover:text-primary-600">
+                    <h3 className="font-semibold text-gray-800 group-hover:text-pnc-blue">
                       {dev.name}
                     </h3>
                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">

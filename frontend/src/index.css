@@ -4,21 +4,100 @@
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-gray-50;
+    background: #f5f7fa;
+    color: #003087;
+    position: relative;
+  }
+  
+  .texture-stripe {
+    position: relative;
+    background: #e8eaed;
+    background-image: 
+      /* Darker grid texture */
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 39px,
+        rgba(0, 0, 0, 0.04) 39px,
+        rgba(0, 0, 0, 0.04) 40px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 39px,
+        rgba(0, 0, 0, 0.04) 39px,
+        rgba(0, 0, 0, 0.04) 40px
+      ),
+      /* Darker quarter circle pattern texture */
+      radial-gradient(circle at 0 0, rgba(0, 0, 0, 0.06) 0%, transparent 20px),
+      radial-gradient(circle at 40px 0, rgba(0, 0, 0, 0.06) 0%, transparent 20px),
+      radial-gradient(circle at 0 40px, rgba(0, 0, 0, 0.06) 0%, transparent 20px),
+      radial-gradient(circle at 40px 40px, rgba(0, 0, 0, 0.06) 0%, transparent 20px),
+      /* Darker color overlays */
+      radial-gradient(circle at 20% 30%, rgba(0, 105, 170, 0.05) 0%, transparent 150px),
+      radial-gradient(circle at 80% 70%, rgba(245, 128, 37, 0.05) 0%, transparent 150px),
+      /* Darker base gradient */
+      linear-gradient(135deg, #e8eaed 0%, #f0f2f5 100%);
+    background-size: 
+      40px 40px,
+      40px 40px,
+      40px 40px,
+      40px 40px,
+      40px 40px,
+      40px 40px,
+      400px 400px,
+      400px 400px,
+      100% 100%;
+    background-attachment: fixed;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold py-2 px-6 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+    @apply text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95;
+    background-color: #F58025;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #D66A1F;
+  }
+  
+  .btn-primary:disabled {
+    background-color: #F58025 !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
   }
   
   .btn-secondary {
-    @apply bg-white text-primary-600 font-semibold py-2 px-6 rounded-lg border-2 border-primary-500 hover:bg-primary-50 transition-all duration-200 active:scale-95;
+    @apply bg-white font-semibold py-2 px-6 rounded-lg border-2 transition-all duration-200 active:scale-95;
+    color: #0069AA;
+    border-color: #0069AA;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #E6F2F8;
+    border-color: #005288;
+    color: #005288;
+  }
+  
+  .btn-secondary:disabled {
+    background-color: #ffffff !important;
+    color: #0069AA !important;
+    border-color: #0069AA !important;
+    opacity: 0.6;
+    cursor: not-allowed;
   }
   
   .card {
-    @apply bg-white rounded-xl shadow-md p-6 border border-gray-100 transition-shadow duration-200 hover:shadow-lg;
+    @apply bg-white rounded-lg shadow-md p-6 border border-gray-100 transition-all duration-200 hover:shadow-lg;
+    box-shadow: 0 2px 8px rgba(0, 105, 170, 0.08);
+  }
+  
+  .card:hover {
+    box-shadow: 0 4px 12px rgba(0, 105, 170, 0.12);
   }
 
   .metric-card {
@@ -38,7 +117,12 @@
   }
   
   .input-field {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all;
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all;
+  }
+  
+  .input-field:focus {
+    --tw-ring-color: #F58025;
+    border-color: #F58025;
   }
 
   /* Skeleton loader */

@@ -26,7 +26,7 @@ function TicketPreview({ tickets }) {
       {/* Incoming Tickets Chart */}
       {skillData.length > 0 && (
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">📥 Incoming Tickets</h3>
+          <h3 className="text-lg font-semibold text-pnc-blue mb-4">📥 Incoming Tickets</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={skillData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -53,10 +53,10 @@ function TicketPreview({ tickets }) {
 
       {/* Tickets Table */}
       <div className="card">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">📋 Tickets Preview</h3>
-        <div className="overflow-x-auto">
+        <h3 className="text-lg font-semibold text-pnc-blue mb-4">📋 Tickets Preview</h3>
+        <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight: '600px' }}>
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 sticky top-0 z-10">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
                 {tickets[0]?.title && (
@@ -71,16 +71,16 @@ function TicketPreview({ tickets }) {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {tickets.slice(0, 10).map((ticket, idx) => (
+              {tickets.map((ticket, idx) => (
                 <tr key={idx} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{ticket.id}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-pnc-blue">{ticket.id}</td>
                   {ticket.title && (
-                    <td className="px-4 py-3 text-sm text-gray-700">{ticket.title}</td>
+                    <td className="px-4 py-3 text-sm text-pnc-blue">{ticket.title}</td>
                   )}
-                  <td className="px-4 py-3 text-sm text-gray-700 max-w-md truncate">
+                  <td className="px-4 py-3 text-sm text-pnc-blue max-w-md truncate">
                     {ticket.description}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{ticket.story_points}</td>
+                  <td className="px-4 py-3 text-sm text-pnc-blue">{ticket.story_points}</td>
                   <td className="px-4 py-3 text-sm">
                     {(() => {
                       // Excel-like professional colors for skills
@@ -131,11 +131,6 @@ function TicketPreview({ tickets }) {
               ))}
             </tbody>
           </table>
-          {tickets.length > 10 && (
-            <p className="mt-2 text-sm text-gray-500 text-center">
-              Showing 10 of {tickets.length} tickets
-            </p>
-          )}
         </div>
       </div>
     </div>

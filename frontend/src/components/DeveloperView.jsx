@@ -44,7 +44,7 @@ function DeveloperView() {
   if (developers.length === 0) {
     return (
       <div className="card">
-        <p className="text-gray-600">No developer data available. Make sure developers.csv exists in backend/data/</p>
+        <p className="text-pnc-blue">No developer data available. Make sure developers.csv exists in backend/data/</p>
       </div>
     )
   }
@@ -52,8 +52,8 @@ function DeveloperView() {
   return (
     <div className="space-y-6">
       <div className="card">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">👥 Developer Information</h2>
-        <p className="text-gray-600 mb-6">
+        <h2 className="text-2xl font-bold text-pnc-blue mb-4">👥 Developer Information</h2>
+        <p className="text-pnc-blue mb-6">
           Developer data is loaded from the backend API endpoint
         </p>
 
@@ -73,8 +73,8 @@ function DeveloperView() {
             <tbody className="bg-white divide-y divide-gray-200">
               {developers.map((dev, idx) => (
                 <tr key={idx} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{dev.name}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">
+                  <td className="px-4 py-3 text-sm font-medium text-pnc-blue">{dev.name}</td>
+                  <td className="px-4 py-3 text-sm text-pnc-blue">
                     <div className="flex items-center">
                       <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
                         <div
@@ -85,14 +85,14 @@ function DeveloperView() {
                       <span>{parseFloat(dev.availability_pct || 0).toFixed(1)}%</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{dev.current_workload} pts</td>
+                  <td className="px-4 py-3 text-sm text-pnc-blue">{dev.current_workload} pts</td>
                   <td className="px-4 py-3 text-sm">
-                    <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium">
+                    <span className="px-2 py-1 bg-blue-100 text-pnc-blue rounded-full text-xs font-medium">
                       {parseFloat(dev.capacity || 0).toFixed(2)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700 max-w-md">{dev.skills}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{dev.experience_years} years</td>
+                  <td className="px-4 py-3 text-sm text-pnc-blue max-w-md">{dev.skills}</td>
+                  <td className="px-4 py-3 text-sm text-pnc-blue">{dev.experience_years} years</td>
                 </tr>
               ))}
             </tbody>
@@ -103,7 +103,7 @@ function DeveloperView() {
       {/* Visualizations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">📊 Developer Availability</h3>
+          <h3 className="text-lg font-semibold text-pnc-blue mb-4">📊 Developer Availability</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={developers}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -123,7 +123,7 @@ function DeveloperView() {
         </div>
 
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">⚡ Developer Capacity Score</h3>
+          <h3 className="text-lg font-semibold text-pnc-blue mb-4">⚡ Developer Capacity Score</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={developers}>
               <CartesianGrid strokeDasharray="3 3" />

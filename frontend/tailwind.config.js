@@ -4,20 +4,29 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
-          50: '#f0f4ff',
-          100: '#e0e9ff',
-          200: '#c7d7fe',
-          300: '#a4b8fc',
-          400: '#818cf8',
-          500: '#667eea',
-          600: '#764ba2',
-          700: '#5a3d7a',
-          800: '#4a2c5c',
-          900: '#3d1f4a',
+          50: '#fff4e6',
+          100: '#ffe0b3',
+          200: '#ffcc80',
+          300: '#ffb84d',
+          400: '#ffa31a',
+          500: '#ff8c00', // PNC Orange
+          600: '#e67e00',
+          700: '#cc7000',
+          800: '#b36200',
+          900: '#995400',
+        },
+        pnc: {
+          orange: '#F58025', // Official PNC Orange
+          'orange-dark': '#D66A1F',
+          'orange-light': '#FF9A4D',
+          blue: '#0069AA', // Official PNC Blue
+          'blue-dark': '#005288',
+          'blue-light': '#007BC4',
         },
       },
     },
