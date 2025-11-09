@@ -7,7 +7,7 @@ import AssignmentApproval from './components/AssignmentApproval'
 import DeveloperDetail from './components/DeveloperDetail'
 import DeveloperView from './components/DeveloperView'
 import LoadingSpinner from './components/LoadingSpinner'
-import { assignTickets, getTickets } from './services/api'
+import { assignTickets, getTickets, getDevelopers } from './services/api'
 
 
 function App() {
@@ -24,11 +24,24 @@ function App() {
   const [ticketLimit, setTicketLimit] = useState('all') // Number of tickets to assign
   const [storyPointsFilter, setStoryPointsFilter] = useState('all') // Filter by story points
   const [difficultyFilter, setDifficultyFilter] = useState('all') // Filter by priority (difficulty)
+  const [developers, setDevelopers] = useState([]) // List of all developers
 
-  // Load tickets on component mount
+  // Load tickets and developers on component mount
   useEffect(() => {
     loadTickets()
+    loadDevelopers()
   }, [])
+
+  const loadDevelopers = async () => {
+    try {
+      const result = await getDevelopers()
+      if (result && result.status === 'success' && result.developers) {
+        setDevelopers(result.developers)
+      }
+    } catch (err) {
+      console.error('Error loading developers:', err)
+    }
+  }
 
   const loadTickets = async () => {
     setLoadingTickets(true)
@@ -172,6 +185,14 @@ function App() {
       assignments: approvedAssignments
     })
     setAssignments(null) // Clear pending approvals
+    
+    // Auto-scroll to assignment results after a brief delay
+    setTimeout(() => {
+      const resultsElement = document.getElementById('assignment-results')
+      if (resultsElement) {
+        resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
   }
 
   const handleReset = () => {
@@ -189,6 +210,42 @@ function App() {
 
   const handleBackFromDeveloper = () => {
     setSelectedDeveloper(null)
+  }
+
+  const handleReassignTicket = (ticketId, newDeveloperName) => {
+    if (!finalizedAssignments) return
+
+    // Update the assignment
+    const updatedAssignments = finalizedAssignments.assignments.map(assignment => {
+      if (assignment.ticket_id === ticketId) {
+        return {
+          ...assignment,
+          assigned_to: newDeveloperName,
+          reason: `Manually reassigned from ${assignment.assigned_to} to ${newDeveloperName}. ${assignment.reason}`
+        }
+      }
+      return assignment
+    })
+
+    setFinalizedAssignments({
+      ...finalizedAssignments,
+      assignments: updatedAssignments
+    })
+  }
+
+  const handleRemoveTicket = (ticketId) => {
+    if (!finalizedAssignments) return
+
+    // Remove the assignment
+    const updatedAssignments = finalizedAssignments.assignments.filter(
+      assignment => assignment.ticket_id !== ticketId
+    )
+
+    setFinalizedAssignments({
+      ...finalizedAssignments,
+      assignments: updatedAssignments,
+      total_tickets: updatedAssignments.length
+    })
   }
 
   return (
@@ -244,6 +301,9 @@ function App() {
                 tickets={tickets}
                 rejectedTickets={rejectedTickets[selectedDeveloper.name] || []}
                 onBack={handleBackFromDeveloper}
+                developers={developers}
+                onReassignTicket={handleReassignTicket}
+                onRemoveTicket={handleRemoveTicket}
               />
             )}
 
@@ -298,7 +358,7 @@ function App() {
                         <span className="text-2xl">📋</span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-blue-800 text-lg">Tickets Loaded Successfully</h3>
+                        <h3 className="font-semibold text-blue-800 text-lg">Client Tickets Loaded Successfully</h3>
                       </div>
                     </div>
                     <button
@@ -443,13 +503,6 @@ function App() {
                       <div className="absolute inset-0 bg-gradient-to-r from-pnc-orange-dark to-pnc-orange opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                     )}
                   </button>
-                  {loading && (
-                    <div className="mt-4 text-center">
-                      <p className="text-sm text-gray-500">
-                        This may take a minute for {tickets.length} tickets...
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
             )}

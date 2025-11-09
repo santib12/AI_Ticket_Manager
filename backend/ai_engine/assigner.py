@@ -59,7 +59,7 @@ def assign_ticket_from_csv(tickets_df: pd.DataFrame, max_workers: int = 5) -> Li
             developer_info = get_developer_info_with_assignments(developers_df, assignment_tracker)
             assignment_summary = get_assignment_summary(assignment_tracker)
         
-        # Create optimized prompt (shorter but still detailed)
+        # Create detailed prompt with explicit parameter requirements
         prompt = f"""Assign this ticket to a developer. DISTRIBUTE workload evenly across ALL developers.
 
 Developers (current batch assignments):
@@ -74,12 +74,12 @@ Ticket:
 
 Current distribution: {assignment_summary}
 
-Rules: 1) Distribute evenly, 2) Match skills, 3) Consider capacity, 4) Prefer less-assigned devs.
+Rules: 1) Distribute evenly, 2) Match skills, 3) Consider capacity, 4) Consider job title relevance (e.g., Backend Engineer for backend tickets, Frontend Developer for frontend tickets, DevOps Engineer for infrastructure tickets), 5) Prefer less-assigned devs.
 
 Respond with JSON:
 {{
     "assigned_to": "DeveloperName",
-    "reason": "DETAILED explanation (3-5 sentences): Why this developer, skill match, workload/capacity analysis, comparison with alternatives, distribution impact, experience relevance, availability factor"
+    "reason": "Provide a DETAILED explanation (4-6 sentences) that MUST include: (1) The selected developer's specific parameters: job title, availability percentage, current workload, base capacity, remaining capacity after this assignment, experience years, and relevant skills. (2) Why this developer was chosen: job title relevance analysis (how their role aligns with the ticket type), skill match analysis (exact skill match or closest match), capacity analysis (can they handle this ticket's story points), workload balance (how this maintains even distribution), and experience relevance. (3) Comparison with 1-2 alternative developers: why they were NOT chosen, including their job titles and how they compare (e.g., 'Alice (Senior Software Engineer) has 85% availability and 10 pts workload, giving her 15.5 base capacity with 12 pts remaining, but her role is more generalist and she lacks React skills. Bob (Frontend Developer) has React skills and 12.3 remaining capacity, and his job title is highly relevant for this frontend ticket, but has already been assigned 3 tickets in this batch, so choosing him would unbalance distribution. Charlie (Full Stack Developer) has React skills, 11.2 remaining capacity, a relevant job title for this full-stack ticket, and only 1 ticket assigned, making him the optimal choice for balanced distribution.')"
 }}"""
         
         max_retries = 2  # Reduced retries for speed
@@ -95,7 +95,7 @@ Respond with JSON:
                     messages=[
                         {
                             "role": "system",
-                            "content": "You are an expert at matching tickets to developers. Distribute evenly. Provide DETAILED reasoning (3-5 sentences) with specific comparisons, capacity numbers, and skill matching. Respond with valid JSON only."
+                            "content": "You are an expert at matching tickets to developers. Your reasoning MUST be highly detailed and include: (1) Specific parameter values for the selected developer (job title, availability %, current workload, base capacity, remaining capacity, experience years, skills), (2) Job title relevance analysis (how the developer's role aligns with the ticket type), (3) Explicit skill match analysis, (4) Capacity calculations showing why they can handle this ticket, (5) Workload distribution impact, (6) Direct comparisons with 2-3 alternative developers explaining why they were not chosen with their specific parameters including job titles. Always use exact numbers from the developer data. Respond with valid JSON only."
                         },
                         {
                             "role": "user",
@@ -134,12 +134,26 @@ Respond with JSON:
                     # Fallback: use smart assignment algorithm
                     with tracker_lock:
                         assigned_name = smart_fallback_assignment(developers_df, ticket, assignment_tracker)
+                        assigned_tickets_before = assignment_tracker[assigned_name]['tickets']
                         assignment_tracker[assigned_name]['tickets'] += 1
                         assignment_tracker[assigned_name]['story_points'] += int(ticket.get('story_points', 0) or 0)
+                    # Get developer details for fallback reason
+                    dev = developers_df[developers_df['name'] == assigned_name].iloc[0]
+                    capacity = calculate_developer_capacity(dev['availability'], dev['current_workload'])
+                    assigned_points_before = assignment_tracker[assigned_name]['story_points'] - int(ticket.get('story_points', 0) or 0)
+                    remaining_capacity = capacity - assigned_points_before
+                    try:
+                        if 'title' in dev.index:
+                            title_val = dev['title']
+                            title = str(title_val) if pd.notna(title_val) else 'Software Engineer'
+                        else:
+                            title = 'Software Engineer'
+                    except (KeyError, AttributeError):
+                        title = 'Software Engineer'
                     result = {
                         "ticket_id": int(ticket['id']),
                         "assigned_to": assigned_name,
-                        "reason": f"Error parsing GPT response after {max_retries} retries. Used smart fallback algorithm."
+                        "reason": f"Assigned via fallback algorithm after GPT parsing error. {assigned_name} ({title}) was selected with {dev['availability']:.1%} availability, {dev['current_workload']} pts current workload, {capacity:.2f} base capacity, {remaining_capacity:.2f} remaining capacity, {dev['experience_years']} years experience, and skills: {dev['skills']}. The job title '{title}' is relevant for this ticket type. This assignment maintains workload balance with {assigned_tickets_before} tickets already assigned in this batch."
                     }
                     assigned = True
                 else:
@@ -160,12 +174,26 @@ Respond with JSON:
                     # Final fallback
                     with tracker_lock:
                         assigned_name = smart_fallback_assignment(developers_df, ticket, assignment_tracker)
+                        assigned_tickets_before = assignment_tracker[assigned_name]['tickets']
                         assignment_tracker[assigned_name]['tickets'] += 1
                         assignment_tracker[assigned_name]['story_points'] += int(ticket.get('story_points', 0) or 0)
+                    # Get developer details for fallback reason
+                    dev = developers_df[developers_df['name'] == assigned_name].iloc[0]
+                    capacity = calculate_developer_capacity(dev['availability'], dev['current_workload'])
+                    assigned_points_before = assignment_tracker[assigned_name]['story_points'] - int(ticket.get('story_points', 0) or 0)
+                    remaining_capacity = capacity - assigned_points_before
+                    try:
+                        if 'title' in dev.index:
+                            title_val = dev['title']
+                            title = str(title_val) if pd.notna(title_val) else 'Software Engineer'
+                        else:
+                            title = 'Software Engineer'
+                    except (KeyError, AttributeError):
+                        title = 'Software Engineer'
                     result = {
                         "ticket_id": int(ticket['id']),
                         "assigned_to": assigned_name,
-                        "reason": f"API error after {max_retries} retries: {error_msg}. Used smart fallback algorithm."
+                        "reason": f"Assigned via fallback algorithm after API error ({error_msg}). {assigned_name} ({title}) was selected with {dev['availability']:.1%} availability, {dev['current_workload']} pts current workload, {capacity:.2f} base capacity, {remaining_capacity:.2f} remaining capacity, {dev['experience_years']} years experience, and skills: {dev['skills']}. The job title '{title}' is relevant for this ticket type. This assignment maintains workload balance with {assigned_tickets_before} tickets already assigned in this batch."
                     }
                     assigned = True
                 else:
@@ -195,12 +223,19 @@ Respond with JSON:
                 # Fallback assignment
                 with tracker_lock:
                     assigned_name = smart_fallback_assignment(developers_df, ticket, assignment_tracker)
+                    assigned_tickets_before = assignment_tracker[assigned_name]['tickets']
                     assignment_tracker[assigned_name]['tickets'] += 1
                     assignment_tracker[assigned_name]['story_points'] += int(ticket.get('story_points', 0) or 0)
+                # Get developer details for fallback reason
+                dev = developers_df[developers_df['name'] == assigned_name].iloc[0]
+                capacity = calculate_developer_capacity(dev['availability'], dev['current_workload'])
+                assigned_points_before = assignment_tracker[assigned_name]['story_points'] - int(ticket.get('story_points', 0) or 0)
+                remaining_capacity = capacity - assigned_points_before
+                title = dev.get('title', 'Software Engineer')
                 assignments.append({
                     "ticket_id": int(ticket['id']),
                     "assigned_to": assigned_name,
-                    "reason": f"Error during parallel processing: {str(e)}. Used smart fallback algorithm."
+                    "reason": f"Assigned via fallback algorithm after parallel processing error ({str(e)}). {assigned_name} ({title}) was selected with {dev['availability']:.1%} availability, {dev['current_workload']} pts current workload, {capacity:.2f} base capacity, {remaining_capacity:.2f} remaining capacity, {dev['experience_years']} years experience, and skills: {dev['skills']}. The job title '{title}' is relevant for this ticket type. This assignment maintains workload balance with {assigned_tickets_before} tickets already assigned in this batch."
                 })
     
     # Sort assignments by ticket_id to maintain order
@@ -210,7 +245,7 @@ Respond with JSON:
 
 
 def get_developer_info_with_assignments(developers_df: pd.DataFrame, assignment_tracker: dict) -> str:
-    """Get developer info including current batch assignments."""
+    """Get developer info including current batch assignments in a clear, structured format."""
     info_lines = []
     for _, dev in developers_df.iterrows():
         name = dev['name']
@@ -219,15 +254,25 @@ def get_developer_info_with_assignments(developers_df: pd.DataFrame, assignment_
         assigned_points = assignment_tracker[name]['story_points']
         remaining_capacity = capacity - assigned_points
         
+        # Get title, handling NaN values
+        try:
+            if 'title' in dev.index:
+                title_val = dev['title']
+                title = str(title_val) if pd.notna(title_val) else 'Software Engineer'
+            else:
+                title = 'Software Engineer'
+        except (KeyError, AttributeError):
+            title = 'Software Engineer'
         info_lines.append(
-            f"- {name}: "
-            f"Availability={dev['availability']:.1%}, "
-            f"Current Workload={dev['current_workload']} pts, "
-            f"Base Capacity={capacity:.2f}, "
-            f"Assigned in batch={assigned_tickets} tickets ({assigned_points} pts), "
-            f"Remaining Capacity={remaining_capacity:.2f}, "
-            f"Skills={dev['skills']}, "
-            f"Experience={dev['experience_years']} years"
+            f"- {name} ({title}):\n"
+            f"  • Availability: {dev['availability']:.1%}\n"
+            f"  • Current Workload: {dev['current_workload']} story points\n"
+            f"  • Base Capacity: {capacity:.2f} story points\n"
+            f"  • Assigned in this batch: {assigned_tickets} tickets ({assigned_points} story points)\n"
+            f"  • Remaining Capacity: {remaining_capacity:.2f} story points\n"
+            f"  • Skills: {dev['skills']}\n"
+            f"  • Experience: {dev['experience_years']} years\n"
+            f"  • Job Title: {title}"
         )
     return "\n".join(info_lines)
 

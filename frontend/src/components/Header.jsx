@@ -8,8 +8,8 @@ function Header({ onToggleSidebar }) {
             <img 
               src="/PNC_LOGO.png" 
               alt="PNC Bank Logo" 
-              className="h-20 w-auto"
-              style={{ maxWidth: '280px' }}
+              className="h-28 w-auto"
+              style={{ maxWidth: '350px' }}
               onError={(e) => {
                 // Fallback if image doesn't load
                 e.target.style.display = 'none'
@@ -20,14 +20,14 @@ function Header({ onToggleSidebar }) {
           {/* Centered Header Content */}
           <div className="flex-1 flex justify-center">
             <div className="fade-in text-center">
-              <h1 className="text-3xl font-bold" style={{ color: '#003087' }}>
-                Ticket Manager
+              <h1 className="text-4xl font-bold" style={{ color: '#003087' }}>
+                PM Ticket Manager
               </h1>
             </div>
           </div>
 
           {/* Right Side - Status and Developers Button */}
-          <div className="flex-shrink-0 flex items-center space-x-4">
+          <div className="flex-shrink-0 flex items-center space-x-4" style={{ marginLeft: 'auto', paddingLeft: '2rem' }}>
             <div className="hidden md:flex items-center space-x-2 text-sm" style={{ color: '#003087' }}>
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <span>System Ready</span>

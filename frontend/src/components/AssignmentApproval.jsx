@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
   const [approvedTickets, setApprovedTickets] = useState(new Set())
@@ -257,25 +257,39 @@ function AssignmentApproval({ assignments, tickets, onApproveSelected }) {
               <div>
                 <h3 className="text-lg font-semibold text-pnc-blue mb-4">Tickets per Developer</h3>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={developerData}>
+                  <LineChart data={developerData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} stroke="#6b7280" />
                     <YAxis stroke="#6b7280" />
                     <Tooltip />
-                    <Bar dataKey="tickets" fill="#94a3b8" radius={[4, 4, 0, 0]} />
-                  </BarChart>
+                    <Line 
+                      type="monotone" 
+                      dataKey="tickets" 
+                      stroke="#4472C4" 
+                      strokeWidth={3}
+                      dot={{ fill: '#4472C4', r: 5 }}
+                      activeDot={{ r: 7 }}
+                    />
+                  </LineChart>
                 </ResponsiveContainer>
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-pnc-blue mb-4">Story Points per Developer</h3>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={developerData}>
+                  <LineChart data={developerData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} stroke="#6b7280" />
                     <YAxis stroke="#6b7280" />
                     <Tooltip />
-                    <Bar dataKey="storyPoints" fill="#94a3b8" radius={[4, 4, 0, 0]} />
-                  </BarChart>
+                    <Line 
+                      type="monotone" 
+                      dataKey="storyPoints" 
+                      stroke="#4472C4" 
+                      strokeWidth={3}
+                      dot={{ fill: '#4472C4', r: 5 }}
+                      activeDot={{ r: 7 }}
+                    />
+                  </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>

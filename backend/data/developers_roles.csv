@@ -1,0 +1,21 @@
+name,title,experience,workload,availability,skills,remaining_capacity
+Alice,Senior Software Engineer,3,11,0.65,HTML/CSS;Azure;Java,9
+Bob,Backend Engineer,10,14,0.93,Kubernetes;React;Flask,6
+Charlie,Full Stack Developer,9,7,0.61,Python;C#;JavaScript,13
+Diana,Frontend Developer,9,14,0.65,Node.js;JavaScript;SQL;Flask;AWS;Django,6
+Evan,Data Engineer,5,17,0.9,Azure;Docker;Django;Java,3
+Fiona,Machine Learning Engineer,8,18,0.87,Kubernetes;C++;JavaScript;Java;React,2
+George,DevOps Engineer,10,8,0.34,Docker;Kubernetes;TypeScript;Flask;React;AWS,12
+Hannah,Cloud Architect,4,8,0.87,C#;Node.js;SQL,12
+Ian,Software Engineer Intern,3,5,0.77,Kubernetes;C++;TypeScript;React;JavaScript;Azure,15
+Jasmine,QA Engineer,7,7,0.31,Azure;Flask;Python;SQL,13
+Kyle,Mobile Developer,1,9,0.74,Kubernetes;C++;Node.js;Django,11
+Laura,Database Administrator,9,8,0.69,Kubernetes;Flask;HTML/CSS;JavaScript,12
+Mason,Cybersecurity Engineer,8,8,0.64,Django;Kubernetes;Azure;C++;Node.js;Docker,12
+Nina,Systems Analyst,1,10,0.38,Azure;React;TypeScript;C#;Django,10
+Oscar,Embedded Systems Engineer,6,3,0.6,JavaScript;C#;SQL;AWS;Django;React,17
+Paula,UX/UI Designer,1,14,0.86,HTML/CSS;Java;Django;JavaScript;Azure,6
+Quentin,Automation Engineer,2,13,0.97,JavaScript;HTML/CSS;Flask;Django;SQL;AWS,7
+Riley,Junior Developer,1,11,0.55,AWS;React;Django;Azure;Docker,9
+Sophia,AI Research Engineer,1,18,0.56,Django;Azure;TypeScript;React,2
+Trent,Site Reliability Engineer,4,7,0.76,React;Python;Node.js;TypeScript;C++;SQL,13

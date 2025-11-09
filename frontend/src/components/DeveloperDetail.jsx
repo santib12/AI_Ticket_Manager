@@ -1,6 +1,6 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
-function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = [], onBack }) {
+function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = [], onBack, developers = [], onReassignTicket, onRemoveTicket }) {
   if (!developer) return null
 
   // Get assigned tickets for this developer
@@ -48,6 +48,9 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
   }))
 
   const mutedColors = ['#94a3b8', '#64748b', '#475569', '#334155', '#1e293b', '#cbd5e1', '#f1f5f9']
+  
+  // Filter out current developer from reassignment options
+  const reassignmentOptions = developers.filter(dev => dev.name !== developer.name)
 
   const downloadCSV = () => {
     const headers = ['id', 'title', 'description', 'story_points', 'required_skill', 'priority', 'assigned_to', 'reason']
@@ -134,17 +137,17 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
 
       {/* Assignment Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card bg-gradient-to-br from-slate-400 to-slate-500 text-white">
-          <div className="text-3xl font-bold">{totalAssigned}</div>
-          <div className="text-slate-100 mt-1">Assigned Tickets</div>
+        <div className="card" style={{ backgroundColor: '#E6F2F8' }}>
+          <div className="text-3xl font-bold" style={{ color: '#003087' }}>{totalAssigned || 0}</div>
+          <div className="mt-1" style={{ color: '#003087' }}>Assigned Tickets</div>
         </div>
-        <div className="card bg-gradient-to-br from-slate-500 to-slate-600 text-white">
-          <div className="text-3xl font-bold">{totalStoryPoints}</div>
-          <div className="text-slate-100 mt-1">Total Story Points</div>
+        <div className="card" style={{ backgroundColor: '#E6F2F8' }}>
+          <div className="text-3xl font-bold" style={{ color: '#003087' }}>{totalStoryPoints || 0}</div>
+          <div className="mt-1" style={{ color: '#003087' }}>Total Story Points</div>
         </div>
-        <div className="card bg-gradient-to-br from-slate-400 to-slate-500 text-white">
-          <div className="text-3xl font-bold">{avgStoryPoints}</div>
-          <div className="text-slate-100 mt-1">Avg Points/Ticket</div>
+        <div className="card" style={{ backgroundColor: '#E6F2F8' }}>
+          <div className="text-3xl font-bold" style={{ color: '#003087' }}>{avgStoryPoints || '0.0'}</div>
+          <div className="mt-1" style={{ color: '#003087' }}>Avg Points/Ticket</div>
         </div>
       </div>
 
@@ -155,19 +158,20 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
             <div className="card">
               <h3 className="text-lg font-semibold text-pnc-blue mb-4">Skills Distribution</h3>
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={skillData}>
+                <LineChart data={skillData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="skill" angle={-45} textAnchor="end" height={80} stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
                   <Tooltip />
-                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                    {skillData.map((entry, index) => {
-                      // Excel-like professional colors
-                      const colors = ['#4472C4', '#70AD47', '#FFC000', '#ED7D31', '#5B9BD5', '#A5A5A5', '#7030A0', '#C55A11']
-                      return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                    })}
-                  </Bar>
-                </BarChart>
+                  <Line 
+                    type="monotone" 
+                    dataKey="count" 
+                    stroke="#4472C4" 
+                    strokeWidth={3}
+                    dot={{ fill: '#4472C4', r: 5 }}
+                    activeDot={{ r: 7 }}
+                  />
+                </LineChart>
               </ResponsiveContainer>
             </div>
           )}
@@ -256,6 +260,41 @@ function DeveloperDetail({ developer, assignments, tickets, rejectedTickets = []
                         <strong>🤔 AI Reasoning:</strong> {ticket.reason}
                       </p>
                     </div>
+                  </div>
+                  <div className="ml-4 flex flex-col gap-2">
+                    {/* Reassign Dropdown */}
+                    {onReassignTicket && reassignmentOptions.length > 0 && (
+                      <select
+                        onChange={(e) => {
+                          if (e.target.value && e.target.value !== '') {
+                            onReassignTicket(ticket.ticket_id, e.target.value)
+                            e.target.value = '' // Reset dropdown
+                          }
+                        }}
+                        className="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white text-pnc-blue hover:border-pnc-blue focus:outline-none focus:ring-2 focus:ring-pnc-blue focus:border-transparent"
+                        defaultValue=""
+                      >
+                        <option value="">Reassign to...</option>
+                        {reassignmentOptions.map((dev) => (
+                          <option key={dev.name} value={dev.name}>
+                            {dev.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    {/* Remove Button */}
+                    {onRemoveTicket && (
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Are you sure you want to remove ticket #${ticket.id} from ${developer.name}'s profile?`)) {
+                            onRemoveTicket(ticket.ticket_id)
+                          }
+                        }}
+                        className="px-3 py-2 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-medium"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

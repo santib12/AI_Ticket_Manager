@@ -17,14 +17,14 @@ def load_developers_csv(file_path: str = None) -> pd.DataFrame:
         # Get the backend directory (utils.py is in backend/ai_engine/)
         current_dir = Path(__file__).parent
         backend_dir = current_dir.parent
-        file_path = os.path.join(backend_dir, "data", "developers_expanded.csv")
+        file_path = os.path.join(backend_dir, "data", "developers_roles.csv")
     
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Developers CSV not found at: {file_path}")
     
     df = pd.read_csv(file_path)
     
-    # Map column names from expanded CSV to expected format
+    # Map column names from CSV to expected format
     column_mapping = {
         'experience': 'experience_years',
         'workload': 'current_workload'
@@ -36,6 +36,10 @@ def load_developers_csv(file_path: str = None) -> pd.DataFrame:
     missing_columns = [col for col in required_columns if col not in df.columns]
     if missing_columns:
         raise ValueError(f"Missing required columns in developers CSV: {', '.join(missing_columns)}")
+    
+    # Ensure title column exists (optional but preferred)
+    if 'title' not in df.columns:
+        df['title'] = 'Software Engineer'  # Default title if not present
     
     return df
 

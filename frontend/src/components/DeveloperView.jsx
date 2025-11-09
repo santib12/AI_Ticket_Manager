@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import LoadingSpinner from './LoadingSpinner'
 
 function DeveloperView() {
@@ -105,39 +105,41 @@ function DeveloperView() {
         <div className="card">
           <h3 className="text-lg font-semibold text-pnc-blue mb-4">📊 Developer Availability</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={developers}>
+            <LineChart data={developers}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
               <YAxis domain={[0, 100]} />
               <Tooltip />
-              <Bar dataKey="availability_pct" name="Availability %" radius={[4, 4, 0, 0]}>
-                {developers.map((entry, index) => {
-                  // Excel-like colors based on availability
-                  const availability = parseFloat(entry.availability_pct || 0)
-                  const color = availability >= 80 ? '#70AD47' : availability >= 60 ? '#FFC000' : availability >= 40 ? '#ED7D31' : '#C55A11'
-                  return <Cell key={`cell-${index}`} fill={color} />
-                })}
-              </Bar>
-            </BarChart>
+              <Line 
+                type="monotone" 
+                dataKey="availability_pct" 
+                name="Availability %"
+                stroke="#4472C4" 
+                strokeWidth={3}
+                dot={{ fill: '#4472C4', r: 5 }}
+                activeDot={{ r: 7 }}
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
 
         <div className="card">
           <h3 className="text-lg font-semibold text-pnc-blue mb-4">⚡ Developer Capacity Score</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={developers}>
+            <LineChart data={developers}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="capacity" radius={[4, 4, 0, 0]}>
-                {developers.map((entry, index) => {
-                  // Excel-like professional colors
-                  const colors = ['#4472C4', '#70AD47', '#FFC000', '#ED7D31', '#5B9BD5', '#A5A5A5', '#7030A0', '#C55A11']
-                  return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                })}
-              </Bar>
-            </BarChart>
+              <Line 
+                type="monotone" 
+                dataKey="capacity" 
+                stroke="#4472C4" 
+                strokeWidth={3}
+                dot={{ fill: '#4472C4', r: 5 }}
+                activeDot={{ r: 7 }}
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>

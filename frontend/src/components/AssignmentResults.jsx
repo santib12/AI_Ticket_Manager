@@ -7,15 +7,19 @@ function AssignmentResults({ assignments, tickets, onReset }) {
   const assignmentsData = assignments.assignments || []
   const totalTickets = assignments.total_tickets || 0
 
-  // Merge tickets with assignments
-  const mergedData = tickets.map(ticket => {
-    const assignment = assignmentsData.find(a => a.ticket_id === parseInt(ticket.id))
+  // Only show approved tickets - filter to only include tickets that have assignments
+  const assignedTicketIds = new Set(assignmentsData.map(a => a.ticket_id))
+  
+  // Merge tickets with assignments - ONLY include approved/assigned tickets
+  const mergedData = assignmentsData.map(assignment => {
+    const ticket = tickets.find(t => parseInt(t.id) === assignment.ticket_id)
+    if (!ticket) return null
     return {
       ...ticket,
-      assigned_to: assignment?.assigned_to || 'Unassigned',
-      reason: assignment?.reason || 'No assignment',
+      assigned_to: assignment.assigned_to,
+      reason: assignment.reason || 'No assignment',
     }
-  })
+  }).filter(Boolean) // Remove any null entries
 
   // Developer workload statistics
   const developerStats = assignmentsData.reduce((acc, assignment) => {
@@ -76,7 +80,7 @@ function AssignmentResults({ assignments, tickets, onReset }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div id="assignment-results" className="space-y-6">
       {/* Success Message */}
       <div className="card bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 fade-in">
         <div className="flex items-center justify-between">
@@ -192,42 +196,20 @@ function AssignmentResults({ assignments, tickets, onReset }) {
           <h3 className="text-lg font-semibold text-pnc-blue mb-4">👥 Tickets per Developer</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={developerData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="tickets" radius={[4, 4, 0, 0]}>
-                {developerData.map((entry, index) => {
-                  // Excel-like professional colors
-                  const colors = ['#4472C4', '#70AD47', '#FFC000', '#ED7D31', '#5B9BD5', '#A5A5A5', '#7030A0', '#C55A11']
-                  return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                })}
-              </Bar>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} stroke="#6b7280" />
+              <YAxis stroke="#6b7280" />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#f9fafb', 
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px'
+                }}
+              />
+              <Bar dataKey="tickets" radius={[4, 4, 0, 0]} fill="#4472C4" />
             </BarChart>
           </ResponsiveContainer>
         </div>
-
-        {/* Developer Workload - Story Points */}
-        {developerData.some(d => d.storyPoints > 0) && (
-          <div className="card">
-            <h3 className="text-lg font-semibold text-pnc-blue mb-4">📊 Story Points per Developer</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={developerData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="storyPoints" radius={[4, 4, 0, 0]}>
-                {developerData.map((entry, index) => {
-                  // Excel-like professional colors (different shade for variety)
-                  const colors = ['#5B9BD5', '#70AD47', '#FFC000', '#ED7D31', '#4472C4', '#A5A5A5', '#7030A0', '#C55A11']
-                  return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                })}
-              </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
 
         {/* Ticket Distribution Pie Chart */}
         <div className="card">
